@@ -1,15 +1,21 @@
-package asu.edu.cse535.locationawarereminder;
+package asu.edu.cse535.locationawarereminder.activities;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import asu.edu.cse535.locationawarereminder.R;
+import asu.edu.cse535.locationawarereminder.database.DBManager;
 
 public class MainActivity extends AppCompatActivity {
+
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+
+        DBManager.initializeDB(this.getApplicationContext().getPackageName());
+        db = DBManager.getAppDataBase();
     }
 
     @Override
