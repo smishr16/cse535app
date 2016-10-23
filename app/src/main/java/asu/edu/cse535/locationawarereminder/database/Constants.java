@@ -15,6 +15,7 @@ public class Constants {
     public static String DATATYPE_DOUBLE = "double";
 
     public static String COMMA_SEP = ", ";
+    public static String QUOTE = "'";
 
     public static void setDbPath(String packageName) {
         DB_PATH = "/data/data/"+ packageName + "/";

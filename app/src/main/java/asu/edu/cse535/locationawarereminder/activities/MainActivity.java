@@ -1,9 +1,9 @@
 package asu.edu.cse535.locationawarereminder.activities;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,14 +28,19 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, NewTaskActivity.class);
+                startActivity(intent);
+                finish();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+
             }
         });
 
-
-        DBManager.initializeDB(this.getApplicationContext().getPackageName());
-        db = DBManager.getAppDataBase();
+        // Create database
+        DBManager dbManager = new DBManager(MainActivity.this);
+        dbManager.initializeDB(this.getApplicationContext().getPackageName());
+        db = dbManager.getAppDataBase();
     }
 
     @Override
