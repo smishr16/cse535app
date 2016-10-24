@@ -12,8 +12,9 @@ import android.widget.Toast;
 public class DBManager {
 
     private static SQLiteDatabase db;
-
     private static Context dbContext;
+    private static boolean DEBUG = true;
+
     public DBManager(Context context){
         dbContext = context;
     }
@@ -44,7 +45,8 @@ public class DBManager {
             try {
                 db.execSQL(CREATE_TABLE_QUERY);
                 db.setTransactionSuccessful();
-                Toast.makeText(dbContext, "Table created successfully", Toast.LENGTH_LONG).show();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Table created successfully", Toast.LENGTH_SHORT).show();
             }
             catch (SQLiteException e) {
                 Toast.makeText(dbContext , e.getMessage(), Toast.LENGTH_LONG).show();
@@ -72,7 +74,8 @@ public class DBManager {
                 System.out.println(INSERT_TABLE_QUERY);
                 db.execSQL(INSERT_TABLE_QUERY);
                 db.setTransactionSuccessful();
-                //Toast.makeText(dbContext, "Task added successfully", Toast.LENGTH_LONG).show();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Task added successfully", Toast.LENGTH_SHORT).show();
             }
             catch (SQLiteException e) {
                 Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();

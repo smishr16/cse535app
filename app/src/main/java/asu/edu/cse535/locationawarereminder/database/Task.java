@@ -16,6 +16,7 @@ public class Task {
     public static String COLUMN_TASK_STATUS = "Status";
     public static String COLUMN_CREATED_DATE = "Created_Date";
 
+    private int taskId;
     private String desc;
     private Date taskDate;
     private String mot;
@@ -30,6 +31,10 @@ public class Task {
         this.lat = lat;
         this.lng = lng;
         this.createdDate = createdDate;
+    }
+
+    public int getTaskId() {
+        return taskId;
     }
 
     public String getDesc() {

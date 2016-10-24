@@ -3,8 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.MainActivity">
     <item
+        android:id="@+id/action_my_locations"
+        android:orderInCategory="1"
+        android:title="@string/action_my_locations"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_history"
+        android:orderInCategory="2"
+        android:title="@string/action_history"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_nearby_places"
+        android:orderInCategory="3"
+        android:title="@string/action_nearby_places"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:orderInCategory="4"
         android:title="@string/action_settings"
         app:showAsAction="never" />
 </menu>

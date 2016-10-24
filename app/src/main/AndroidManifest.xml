@@ -22,7 +22,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.NewTaskActivity">
+            android:name=".activities.NewTaskActivity"
+            android:label="@string/label_reminder"
+            android:launchMode="singleTask"
+            android:parentActivityName=".activities.MainActivity" >
         </activity>
         <meta-data
             android:name="com.google.android.gms.version"
