@@ -18,7 +18,6 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -31,10 +30,9 @@ public class NewTaskActivity extends AppCompatActivity {
 
     static boolean DEBUG = true;
     static final int PLACE_PICKER_REQUEST = 1;
-    static double latitude;
-    static double longitude;
     static String type;
     static Button buttonSave, buttonGetDirections, buttonMarkDone, buttonPickLocation, buttonAddReminder;
+    static Task t = new Task();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,15 +82,30 @@ public class NewTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Add task to database
-                String desc = "test";
-                Calendar c = Calendar.getInstance();
-                Date taskDate = c.getTime();
-                String mot = "test";
-                String status = "Created";
-                Task t = new Task(desc, taskDate, mot, latitude, longitude, taskDate);
-                DBManager.addTaskToDB(t);
+                //TO:DO Replace dummy values and date values with actual field values
+                boolean checked = checkMandatory();
+                if(checked){
+                    t.setDesc("test");
+                    Calendar c = Calendar.getInstance();
+                    t.setTaskDate(c.getTime());
+                    t.setMot("test");
+                    t.setStatus("Created");
+                    t.setCreatedDate(c.getTime());
+                    DBManager.addTaskToDB(t);
+                    finish();
+                }
             }
         });
+    }
+
+    private boolean checkMandatory(){
+        //Check all mandatory values here
+        //TO:DO Do Mandatory field validations
+        if(t.getLat() == 0.0 && t.getLng() == 0.0){
+            Toast.makeText(NewTaskActivity.this, "Pick a location", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -101,8 +114,10 @@ public class NewTaskActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(this, data);
                 LatLng lat_long =  place.getLatLng();
-                latitude = lat_long.latitude;
-                longitude = lat_long.longitude;
+                if(DEBUG)
+                    Toast.makeText(NewTaskActivity.this, lat_long.latitude + " " + lat_long.longitude, Toast.LENGTH_SHORT).show();
+                t.setLat(lat_long.latitude);
+                t.setLng(lat_long.longitude);
                 TextView locationText = (TextView)findViewById(R.id.textView_location);
                 locationText.setText(place.getName());
             }
@@ -110,6 +125,7 @@ public class NewTaskActivity extends AppCompatActivity {
     }
 
     private void hideShowControls(Context context){
+        //TO:DO Implement for other types of context
         if(type.equalsIgnoreCase("New"))
             hideControlsForNew(context);
     }

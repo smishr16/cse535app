@@ -10,4 +10,6 @@
     <string name="button_get_directions">Get Directions</string>
     <string name="button_mark_done">Mark as Done</string>
     <string name="label_reminder">Reminder</string>
+    <string name="hint_email">Email</string>
+    <string name ="hint_phone">Phone</string>
 </resources>

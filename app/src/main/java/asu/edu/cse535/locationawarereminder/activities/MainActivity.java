@@ -62,4 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void onSettingsClick(MenuItem item){
+        Intent intent = new Intent(MainActivity.this, Settings.class);
+        startActivity(intent);
+    }
 }

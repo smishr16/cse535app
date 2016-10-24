@@ -22,14 +22,20 @@ public class Task {
     private String mot;
     private double lat;
     private double lng;
+    private String status;
     private Date createdDate;
 
-    public Task(String desc, Date taskDate, String mot, double lat, double lng, Date createdDate){
+    public Task(){
+
+    }
+
+    public Task(String desc, Date taskDate, String mot, double lat, double lng, String status, Date createdDate){
         this.desc = desc;
         this.taskDate = taskDate;
         this.mot = mot;
         this.lat = lat;
         this.lng = lng;
+        this.status = status;
         this.createdDate = createdDate;
     }
 
@@ -57,7 +63,39 @@ public class Task {
         return lng;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public Date getCreatedDate() {
         return createdDate;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public void setTaskDate(Date taskDate) {
+        this.taskDate = taskDate;
+    }
+
+    public void setMot(String mot) {
+        this.mot = mot;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 }
