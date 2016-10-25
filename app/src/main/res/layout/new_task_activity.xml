@@ -54,6 +54,42 @@
                 android:textAllCaps="false"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textview_mot"
+                android:text="@string/textview_mot"
+                android:layout_below="@+id/button_save"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"/>
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textview_mot"
+                android:id="@+id/radioGroupMot">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radiobutton_mot_walking"
+                    android:text="@string/radiobutton_mot_walking"/>
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radiobutton_mot_cycling"
+                    android:text="@string/radiobutton_mot_cycling"/>
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radiobutton_mot_driving"
+                    android:text="@string/radiobutton_mot_driving"/>
+
+
+            </RadioGroup>
 
             <Button
                 style="?android:attr/buttonStyleSmall"
@@ -62,7 +98,7 @@
                 android:text="@string/button_add_reminder"
                 android:id="@+id/button_add_reminder"
                 android:textAllCaps="false"
-                android:layout_below="@+id/button_save"
+                android:layout_below="@+id/radioGroupMot"
                 android:layout_alignParentStart="true" />
 
             <LinearLayout

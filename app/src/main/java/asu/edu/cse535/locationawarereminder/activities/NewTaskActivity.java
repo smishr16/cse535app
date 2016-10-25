@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,9 @@ import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
 import asu.edu.cse535.locationawarereminder.database.Task;
 
+import android.widget.RadioGroup.OnCheckedChangeListener;
+
+
 /**
  * Created by Sooraj on 10/21/2016.
  */
@@ -32,6 +37,8 @@ public class NewTaskActivity extends AppCompatActivity {
     static final int PLACE_PICKER_REQUEST = 1;
     static String type;
     static Button buttonSave, buttonGetDirections, buttonMarkDone, buttonPickLocation, buttonAddReminder;
+    static RadioGroup radioGroupMot;
+    static RadioButton radioWalk, radioCycle, radioDrive;
     static Task t = new Task();
 
     @Override
@@ -53,6 +60,13 @@ public class NewTaskActivity extends AppCompatActivity {
         buttonAddReminder = (Button)findViewById(R.id.button_add_reminder);
         buttonPickLocation = (Button)findViewById(R.id.button_picklocation);
         buttonAddReminder = (Button)findViewById(R.id.button_add_reminder);
+
+        radioGroupMot = (RadioGroup)findViewById(R.id.radioGroupMot);
+        radioWalk = (RadioButton)findViewById(R.id.radiobutton_mot_walking);
+        radioCycle = (RadioButton)findViewById(R.id.radiobutton_mot_cycling);
+        radioDrive = (RadioButton)findViewById(R.id.radiobutton_mot_driving);
+
+
 
         // Method to hide or show controls according to context
         hideShowControls(getApplicationContext());
