@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,9 +37,10 @@ public class Nearby extends AppCompatActivity {
 
     private GoogleApiClient mGoogleApiClient;
     private static ArrayList<String> placesList = new ArrayList<>();
+    private static ArrayList<String> placeIconList = new ArrayList<>();
     static double currLatitude;
     static double currLongitude;
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
     HashMap<String, String> locationMap = new HashMap<>();
 
     @Override
@@ -56,8 +56,9 @@ public class Nearby extends AppCompatActivity {
         // Add Back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Get Nearby Place list
+        // Get Nearby Place list and calls displayList()
         placesList.clear();
+        placeIconList.clear();
         new ConnectToService().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 
         // Handle onclick of place
@@ -65,7 +66,7 @@ public class Nearby extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selected = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
+                String selected = ((TextView) view.findViewById(R.id.item_name)).getText().toString();
                 if(DEBUG)
                     Toast.makeText(Nearby.this, selected, Toast.LENGTH_SHORT).show();
                 String latlng = locationMap.get(selected);
@@ -81,9 +82,14 @@ public class Nearby extends AppCompatActivity {
 
     // Display place list
     private void displayList() {
+
+        CustomList adapter = new  CustomList(this, placesList, placeIconList);
         ListView listView = (ListView) findViewById(R.id.listView_nearby_places);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, placesList);
         listView.setAdapter(adapter);
+
+        /*ListView listView = (ListView) findViewById(R.id.listView_nearby_places);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.nearby_place_item, R.id.item_name, placesList);
+        listView.setAdapter(adapter);*/
     }
 
     // AsyncTask to get nearby palces
@@ -124,6 +130,8 @@ public class Nearby extends AppCompatActivity {
                                 placesList.add(placeName);
                                 isLocationTag = true;
                             }
+                            if(name.equals("icon"))
+                                placeIconList.add(myparser.nextText());
                             if(name.equals("next_page_token"))
                                 nextToken = myparser.nextText();
                             if(name.equals("error_message"))

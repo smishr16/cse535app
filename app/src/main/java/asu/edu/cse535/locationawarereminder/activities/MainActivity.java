@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(id == R.id.action_nearby_places) {
             if(currLatitude == 0.0 && currLongitude == 0.0)
-                Toast.makeText(MainActivity.this, "Current Location not yet acquired. Try again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Waiting for location. Try again.", Toast.LENGTH_SHORT).show();
             else{
                 Intent intent = new Intent(MainActivity.this, Nearby.class);
                 intent.putExtra("currLat", currLatitude);
