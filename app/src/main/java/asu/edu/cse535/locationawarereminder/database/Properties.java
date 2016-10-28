@@ -5,8 +5,8 @@ package asu.edu.cse535.locationawarereminder.database;
  */
 public class Properties {
 
-    String COLUMN_NAME = "Name";
-    String COLUMN_VALUE = "Value";
+    public static String COLUMN_NAME = "Name";
+    public static String COLUMN_VALUE = "Value";
 
     private String name;
     private String value;
@@ -17,5 +17,13 @@ public class Properties {
 
     public String getValue() {
         return value;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

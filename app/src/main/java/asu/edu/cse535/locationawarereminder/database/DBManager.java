@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 /**
  * Created by Sooraj on 10/20/2016.
  */
@@ -13,7 +15,7 @@ public class DBManager {
 
     private static SQLiteDatabase db;
     private static Context dbContext;
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     public DBManager(Context context){
         dbContext = context;
@@ -23,6 +25,7 @@ public class DBManager {
         Constants.setDbPath(packageName);
         db = SQLiteDatabase.openOrCreateDatabase(Constants.DB_PATH + Constants.DB_NAME, null);
         createTaskTable();
+        createPropertiesTable();
     }
 
     public SQLiteDatabase getAppDataBase(){
@@ -46,7 +49,7 @@ public class DBManager {
                 db.execSQL(CREATE_TABLE_QUERY);
                 db.setTransactionSuccessful();
                 if(DEBUG)
-                    Toast.makeText(dbContext, "Table created successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(dbContext, "Table Task created successfully", Toast.LENGTH_SHORT).show();
             }
             catch (SQLiteException e) {
                 Toast.makeText(dbContext , e.getMessage(), Toast.LENGTH_LONG).show();
@@ -71,7 +74,6 @@ public class DBManager {
         try{
             db.beginTransaction();
             try {
-                System.out.println(INSERT_TABLE_QUERY);
                 db.execSQL(INSERT_TABLE_QUERY);
                 db.setTransactionSuccessful();
                 if(DEBUG)
@@ -85,6 +87,62 @@ public class DBManager {
             }
         }catch (SQLException e){
             Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private static void createPropertiesTable() {
+        String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PROPERTIES + " ( " +
+                Properties.COLUMN_NAME + " " + Constants.DATATYPE_STRING + " PRIMARY KEY" + Constants.COMMA_SEP +
+                Properties.COLUMN_VALUE + " " + Constants.DATATYPE_STRING + " ) ";
+        try{
+            db.beginTransaction();
+            try {
+                db.execSQL(CREATE_TABLE_QUERY);
+                db.setTransactionSuccessful();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Table Properties created successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (SQLiteException e) {
+                Toast.makeText(dbContext , e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }catch (SQLException e){
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void insertIntoProperties(Properties p) {
+        String INSERT_TABLE_QUERY = "INSERT INTO " + Constants.TABLE_PROPERTIES + " ( " +
+                Properties.COLUMN_NAME + Constants.COMMA_SEP + Properties.COLUMN_VALUE + " ) VALUES (" +
+                Constants.QUOTE +  p.getName() + Constants.QUOTE + Constants.COMMA_SEP +
+                Constants.QUOTE + p.getValue() + Constants.QUOTE + ")";
+        try{
+            db.beginTransaction();
+            try {
+                db.execSQL(INSERT_TABLE_QUERY);
+                db.setTransactionSuccessful();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Property " + p.getName() + " added successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (SQLiteException e) {
+                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }catch (SQLException e){
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void insertPropertyList(HashMap<String, String> propertyList){
+        Properties p = new Properties();
+        for(HashMap.Entry<String, String> entry : propertyList.entrySet()) {
+            p.setName(entry.getKey());
+            p.setValue(entry.getValue());
+            insertIntoProperties(p);
         }
     }
 }

@@ -8,9 +8,10 @@ public class Constants {
     public static String DB_NAME = "LAR";
     public static String DB_PATH;
     public static String TABLE_TASK = "TASK";
+    public static String TABLE_PROPERTIES = "PROPERTIES";
 
     public static String DATATYPE_INT = "integer";
-    public static String DATATYPE_STRING = "varchar(255)";
+    public static String DATATYPE_STRING = "varchar(500)";
     public static String DATATYPE_DATETIME = "datetime";
     public static String DATATYPE_DOUBLE = "double";
 

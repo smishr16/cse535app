@@ -3,11 +3,18 @@ package asu.edu.cse535.locationawarereminder.activities;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.HashMap;
 
 import asu.edu.cse535.locationawarereminder.R;
+import asu.edu.cse535.locationawarereminder.database.DBManager;
 
 /**
  * Created by Sooraj on 10/23/2016.
@@ -19,6 +26,11 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
 
+        final EditText editText_email = (EditText) findViewById(R.id.editText_email);
+        final EditText editText_phone = (EditText) findViewById(R.id.editText_phone);
+        final HashMap<String, String> propertyMap = new HashMap<>();
+
+
         // Display up button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -27,9 +39,27 @@ public class Settings extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                //TO:DO Save settings to Database
 
-                finish();
+                if(validateFields()) {
+                    //TO:DO Save settings to Database
+                    propertyMap.put("Email", editText_email.getText().toString());
+                    propertyMap.put("Phone", editText_phone.getText().toString());
+                    DBManager.insertPropertyList(propertyMap);
+                    finish();
+                }
+            }
+
+            private boolean validateFields(){
+                boolean isValidated = true;
+                if(TextUtils.isEmpty(editText_email.getText().toString()) || !Patterns.EMAIL_ADDRESS.matcher(editText_email.getText().toString()).matches()) {
+                    Toast.makeText(Settings.this, "Provide valid Email", Toast.LENGTH_LONG).show();
+                    isValidated = false;
+                }
+                if(TextUtils.isEmpty(editText_phone.getText().toString()) || !Patterns.PHONE.matcher(editText_phone.getText().toString()).matches()) {
+                    Toast.makeText(Settings.this, "Provide valid Phone", Toast.LENGTH_LONG).show();
+                    isValidated = false;
+                }
+                return isValidated;
             }
         });
     }

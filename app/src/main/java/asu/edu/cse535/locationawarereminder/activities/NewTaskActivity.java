@@ -33,9 +33,9 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
  */
 public class NewTaskActivity extends AppCompatActivity {
 
-    static boolean DEBUG = true;
+    static boolean DEBUG = false;
     static final int PLACE_PICKER_REQUEST = 1;
-    static String type;
+    static int mode;
     static Button buttonSave, buttonGetDirections, buttonMarkDone, buttonPickLocation, buttonAddReminder;
     static RadioGroup radioGroupMot;
     static RadioButton radioWalk, radioCycle, radioDrive;
@@ -52,7 +52,7 @@ public class NewTaskActivity extends AppCompatActivity {
         // Read extras from Intent
         Bundle extras = getIntent().getExtras();
         if(extras != null)
-            type = extras.getString("Type");
+            mode = extras.getInt("Mode");
 
         buttonSave = (Button)findViewById(R.id.button_save);
         buttonGetDirections = (Button)findViewById(R.id.button_get_directions);
@@ -140,11 +140,11 @@ public class NewTaskActivity extends AppCompatActivity {
 
     private void hideShowControls(Context context){
         //TO:DO Implement for other types of context
-        if(type.equalsIgnoreCase("New"))
-            hideControlsForNew(context);
+        if(mode == R.string.new_task)
+            hideControlsForNewTask(context);
     }
 
-    private static void hideControlsForNew(Context context){
+    private static void hideControlsForNewTask(Context context){
         buttonMarkDone.setVisibility(View.GONE);
         buttonGetDirections.setVisibility(View.GONE);
         buttonSave.setVisibility(View.GONE);
