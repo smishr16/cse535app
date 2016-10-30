@@ -17,4 +17,6 @@
     <string name ="radiobutton_mot_driving">Driving</string>
     <string name ="textview_mot">Choose Your Method of Transportation</string>
     <string name ="new_task">New Task</string>
+    <string name = "button_pick_date">Choose Date</string>
+    <string name = "button_pick_time">Choose Time</string>
 </resources>
