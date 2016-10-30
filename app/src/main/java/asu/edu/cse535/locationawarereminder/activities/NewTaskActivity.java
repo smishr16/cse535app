@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.icu.text.SimpleDateFormat; //will be used if support for APK 24+ supported
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import android.widget.EditText;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -38,6 +39,8 @@ import asu.edu.cse535.locationawarereminder.database.Task;
 
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import org.w3c.dom.Text;
+
 
 /**
  * Created by Sooraj on 10/21/2016.
@@ -50,7 +53,9 @@ public class NewTaskActivity extends AppCompatActivity {
     static Button buttonSave, buttonGetDirections, buttonMarkDone, buttonPickLocation, buttonAddReminder, buttonPickDate, buttonPickTime;
     static RadioGroup radioGroupMot;
     static RadioButton radioWalk, radioCycle, radioDrive;
+    static EditText reminderDesc;
     DialogFragment dialogFragmentDate, dialogFragmentTime;
+    TextView date, time;
     static Task t = new Task();
 
     @Override
@@ -79,6 +84,11 @@ public class NewTaskActivity extends AppCompatActivity {
         radioWalk = (RadioButton)findViewById(R.id.radiobutton_mot_walking);
         radioCycle = (RadioButton)findViewById(R.id.radiobutton_mot_cycling);
         radioDrive = (RadioButton)findViewById(R.id.radiobutton_mot_driving);
+
+        reminderDesc = (EditText)findViewById(R.id.editText_desc);
+
+        date = (TextView)findViewById(R.id.textView_date);
+        time = (TextView)findViewById(R.id.textView_time);
 
         // Method to hide or show controls according to context
         hideShowControls(getApplicationContext());
@@ -111,7 +121,8 @@ public class NewTaskActivity extends AppCompatActivity {
                 //TO:DO Replace dummy values and date values with actual field values
                 boolean checked = checkMandatory();
                 if(checked){
-                    t.setDesc("test");
+                    //t.setDesc("test");
+                    t.setDesc(reminderDesc.toString());
                     Calendar c = Calendar.getInstance();
                     t.setTaskDate(c.getTime());
                     t.setMot("test");
@@ -157,6 +168,10 @@ public class NewTaskActivity extends AppCompatActivity {
         //TO:DO Do Mandatory field validations
         if(t.getLat() == 0.0 && t.getLng() == 0.0){
             Toast.makeText(NewTaskActivity.this, "Pick a location", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        else if(reminderDesc.toString().isEmpty()){
+            Toast.makeText(NewTaskActivity.this, "Write a Reminder Description", Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
