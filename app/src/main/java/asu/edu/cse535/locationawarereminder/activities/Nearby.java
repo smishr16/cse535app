@@ -135,7 +135,7 @@ public class Nearby extends AppCompatActivity {
                             if(name.equals("next_page_token"))
                                 nextToken = myparser.nextText();
                             if(name.equals("error_message"))
-                                Toast.makeText(Nearby.this, myparser.nextText(), Toast.LENGTH_LONG).show();
+                                System.out.println("###### ERROR ######" + myparser.nextText());
                             if(name.equals("lat") && isLocationTag)
                                 lat = myparser.nextText();
                             if(name.equals("lng") && isLocationTag){

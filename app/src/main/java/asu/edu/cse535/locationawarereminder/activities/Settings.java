@@ -11,10 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import asu.edu.cse535.locationawarereminder.R;
+import asu.edu.cse535.locationawarereminder.database.Constants;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
+import asu.edu.cse535.locationawarereminder.database.Properties;
 
 /**
  * Created by Sooraj on 10/23/2016.
@@ -26,10 +28,12 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
 
-        final EditText editText_email = (EditText) findViewById(R.id.editText_email);
-        final EditText editText_phone = (EditText) findViewById(R.id.editText_phone);
-        final HashMap<String, String> propertyMap = new HashMap<>();
+        // Populate current values
+        populateValues();
 
+        final EditText editText_email = (EditText) findViewById(R.id.editText_email);;
+        final EditText editText_phone = (EditText) findViewById(R.id.editText_phone);
+        final ArrayList<Properties> propertyList = new ArrayList<>();
 
         // Display up button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -39,12 +43,12 @@ public class Settings extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
                 if(validateFields()) {
                     //TO:DO Save settings to Database
-                    propertyMap.put("Email", editText_email.getText().toString());
-                    propertyMap.put("Phone", editText_phone.getText().toString());
-                    DBManager.insertPropertyList(propertyMap);
+                    propertyList.add(new Properties(Constants.propertyEmail, editText_email.getText().toString()));
+                    propertyList.add(new Properties(Constants.propertyPhone, editText_phone.getText().toString()));
+
+                    DBManager.setProperties(propertyList);
                     finish();
                 }
             }
@@ -62,6 +66,21 @@ public class Settings extends AppCompatActivity {
                 return isValidated;
             }
         });
+    }
+
+    private void populateValues() {
+
+        final EditText editText_email = (EditText) findViewById(R.id.editText_email);;
+        final EditText editText_phone = (EditText) findViewById(R.id.editText_phone);
+
+        String[] propertyArray = {Constants.propertyEmail, Constants.propertyPhone};
+        ArrayList<Properties> resultList = DBManager.getProperties(propertyArray);
+        for(Properties row : resultList){
+            if(row.getName().equals(Constants.propertyEmail))
+                editText_email.setText(row.getValue());
+            else if(row.getName().equals(Constants.propertyPhone))
+                editText_phone.setText(row.getValue());
+        }
     }
 
     @Override

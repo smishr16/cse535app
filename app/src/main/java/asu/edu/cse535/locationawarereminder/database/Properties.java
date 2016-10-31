@@ -11,6 +11,13 @@ public class Properties {
     private String name;
     private String value;
 
+    public Properties(){}
+
+    public Properties(String name, String value){
+        this.name = name;
+        this.value = value;
+    }
+
     public String getName() {
         return name;
     }

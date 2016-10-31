@@ -1,29 +1,24 @@
 package asu.edu.cse535.locationawarereminder.activities;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-//import android.support.v4.app.DialogFragment; Using DialogFragment below for Date/Time Picker
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.text.ParseException; //will be used if support for APK 24+ supported
-import java.util.Date; //will be used if support for APK 24+ supported
-import android.app.DialogFragment;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.app.Dialog;
-import android.icu.text.SimpleDateFormat; //will be used if support for APK 24+ supported
-import android.widget.DatePicker;
 import android.widget.TimePicker;
-import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -37,9 +32,7 @@ import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
 import asu.edu.cse535.locationawarereminder.database.Task;
 
-import android.widget.RadioGroup.OnCheckedChangeListener;
-
-import org.w3c.dom.Text;
+//import android.support.v4.app.DialogFragment; Using DialogFragment below for Date/Time Picker
 
 
 /**
@@ -55,16 +48,19 @@ public class NewTaskActivity extends AppCompatActivity {
     static RadioButton radioWalk, radioCycle, radioDrive;
     static EditText reminderDesc;
     DialogFragment dialogFragmentDate, dialogFragmentTime;
-    TextView date, time;
-    static Task t = new Task();
+    static Task t;
+    static int hourOfDaySelected, minuteSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_task_activity);
 
+        t = new Task();
+
         // Display up button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Read extras from Intent
         Bundle extras = getIntent().getExtras();
@@ -74,7 +70,6 @@ public class NewTaskActivity extends AppCompatActivity {
         buttonSave = (Button)findViewById(R.id.button_save);
         buttonGetDirections = (Button)findViewById(R.id.button_get_directions);
         buttonMarkDone = (Button)findViewById(R.id.button_mark_done);
-        buttonAddReminder = (Button)findViewById(R.id.button_add_reminder);
         buttonPickLocation = (Button)findViewById(R.id.button_picklocation);
         buttonAddReminder = (Button)findViewById(R.id.button_add_reminder);
         buttonPickDate = (Button)findViewById(R.id.button_pick_date);
@@ -87,15 +82,11 @@ public class NewTaskActivity extends AppCompatActivity {
 
         reminderDesc = (EditText)findViewById(R.id.editText_desc);
 
-        date = (TextView)findViewById(R.id.textView_date);
-        time = (TextView)findViewById(R.id.textView_time);
-
         // Method to hide or show controls according to context
         hideShowControls(getApplicationContext());
 
         // Add onclick for Pick Location button
-        Button pickLocation = (Button)findViewById(R.id.button_picklocation);
-        pickLocation.setOnClickListener(new View.OnClickListener(){
+        buttonPickLocation.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -103,34 +94,49 @@ public class NewTaskActivity extends AppCompatActivity {
                 try {
                     PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                     startActivityForResult(builder.build(NewTaskActivity.this), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
                 }
             }
         });
 
         //Add onclick for Add Reminder button
-        Button addRem = (Button)findViewById(R.id.button_add_reminder);
-        addRem.setOnClickListener(new View.OnClickListener(){
+        buttonAddReminder.setOnClickListener(new View.OnClickListener(){
 
+            private int year, month, dateField;
             @Override
             public void onClick(View v) {
                 //Add task to database
-                //TO:DO Replace dummy values and date values with actual field values
                 boolean checked = checkMandatory();
                 if(checked){
-                    //t.setDesc("test");
-                    t.setDesc(reminderDesc.toString());
+                    TextView date = (TextView)findViewById(R.id.textView_date);
+                    TextView time = (TextView)findViewById(R.id.textView_time);
+
+                    t.setDesc(reminderDesc.getText().toString());
                     Calendar c = Calendar.getInstance();
-                    t.setTaskDate(c.getTime());
-                    t.setMot("test");
+                    if(!date.getText().toString().isEmpty() && !time.getText().toString().isEmpty()){
+                        formatDateInput(date.getText().toString());
+                        month -= 1;
+                        c.set(year, month, dateField, hourOfDaySelected, minuteSelected);
+                        t.setTaskDate(c.getTime());
+                    }
+                    if(radioWalk.isSelected())
+                        t.setMot("Walking");
+                    else if(radioCycle.isSelected())
+                        t.setMot("Cycling");
+                    else if(radioDrive.isSelected())
+                        t.setMot("Driving");
                     t.setStatus("Created");
                     t.setCreatedDate(c.getTime());
-                    DBManager.addTaskToDB(t);
+                    DBManager.insertIntoTask(t);
                     finish();
                 }
+            }
+
+            private void formatDateInput(String dateVal) {
+                month = Integer.parseInt(dateVal.split("/")[0]);
+                dateField = Integer.parseInt(dateVal.split("/")[1]);
+                year = Integer.parseInt(dateVal.split("/")[2]);
             }
         });
 
@@ -139,10 +145,8 @@ public class NewTaskActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
 
                 dialogFragmentDate = new DatePickerDialogTheme();
-
                 dialogFragmentDate.show(getFragmentManager(), "Pick Date");
             }
         });
@@ -153,10 +157,7 @@ public class NewTaskActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-
                 dialogFragmentTime = new TimePickerDialogTheme();
-
                 dialogFragmentTime.show(getFragmentManager(),"Pick Time");
             }
 
@@ -165,15 +166,16 @@ public class NewTaskActivity extends AppCompatActivity {
 
     private boolean checkMandatory(){
         //Check all mandatory values here
-        //TO:DO Do Mandatory field validations
+        if(reminderDesc.getText().toString().isEmpty()){
+            Toast.makeText(NewTaskActivity.this, "Provide a Reminder Description", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
         if(t.getLat() == 0.0 && t.getLng() == 0.0){
             Toast.makeText(NewTaskActivity.this, "Pick a location", Toast.LENGTH_LONG).show();
             return false;
         }
-        else if(reminderDesc.toString().isEmpty()){
-            Toast.makeText(NewTaskActivity.this, "Write a Reminder Description", Toast.LENGTH_LONG).show();
-            return false;
-        }
+
         return true;
     }
 
@@ -188,15 +190,18 @@ public class NewTaskActivity extends AppCompatActivity {
                 t.setLat(lat_long.latitude);
                 t.setLng(lat_long.longitude);
                 TextView locationText = (TextView)findViewById(R.id.textView_location);
-                locationText.setText(place.getName());
+                String locText = place.getName() + " " + place.getAddress();
+                locationText.setText(locText);
             }
         }
     }
 
     private void hideShowControls(Context context){
         //TO:DO Implement for other types of context
-        if(mode == R.string.new_task)
+        if(mode == R.string.new_task){
             hideControlsForNewTask(context);
+            setTitle(R.string.new_task);
+        }
     }
 
     private static void hideControlsForNewTask(Context context){
@@ -230,13 +235,13 @@ public class NewTaskActivity extends AppCompatActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
             DatePickerDialog datePickerDialog;
-            Calendar calendar =Calendar.getInstance();
+            Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_WEEK);
+            int day = calendar.get(Calendar.DATE);
 
 
-            datePickerDialog  = new DatePickerDialog(getActivity(),16974545,this,year,month,day);
+            datePickerDialog  = new DatePickerDialog(getActivity(),0,this,year,month,day);
 
             return datePickerDialog;
         }
@@ -244,8 +249,8 @@ public class NewTaskActivity extends AppCompatActivity {
         public void onDateSet(DatePicker view, int year, int month, int day){
 
             TextView displayDate = (TextView)getActivity().findViewById(R.id.textView_date);
-
-            displayDate.setText((month+1) + "/" + day + "/" + year);
+            String dateText = (month+1) + "/" + day + "/" + year;
+            displayDate.setText(dateText);
 
         }
     }
@@ -259,7 +264,7 @@ public class NewTaskActivity extends AppCompatActivity {
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
             TimePickerDialog timePickerDialog;
-            timePickerDialog= new TimePickerDialog(getActivity(),16974545,this,hour,minute,false);
+            timePickerDialog= new TimePickerDialog(getActivity(),this,hour,minute,false);
 
             return timePickerDialog;
         }
@@ -268,13 +273,15 @@ public class NewTaskActivity extends AppCompatActivity {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute){
 
             TextView displayTime = (TextView)getActivity().findViewById(R.id.textView_time);
+            hourOfDaySelected = hourOfDay;
+            minuteSelected = minute;
             String amPm = getAmPm(hourOfDay);
             String time = getTime(hourOfDay, minute);
 
             // APK 24+ final String
             //final String time = hourOfDay + ":" + minute;
-
-            displayTime.setText(time + " " + amPm);
+            String timeText = time + " " + amPm;
+            displayTime.setText(timeText);
 
             /* Only works with APK 24+
             try {
@@ -289,12 +296,11 @@ public class NewTaskActivity extends AppCompatActivity {
 
         // Using 24-hour time calculate 12-hour time AM/PM
         public String getAmPm (int hour){
-            String amPm = "";
+            String amPm;
 
             if (hour >= 12) {
                 amPm = "PM";
             }
-
             else {
                 amPm = "AM";
             }
@@ -303,8 +309,8 @@ public class NewTaskActivity extends AppCompatActivity {
 
         // Using 24-hour time convert to 12-hour time
         public String getTime (int hour, int minutes){
-            String time = "";
-            String hours = "";
+            String time;
+            String hours;
 
             if (hour > 12){
                 if (hour >=22){
@@ -315,14 +321,15 @@ public class NewTaskActivity extends AppCompatActivity {
                     hour = hour - 12;
                     hours = "0" + hour;
                 }
-
             }
             else if (hour == 0){
                 hours = 12 + "";
             }
-            else{
+            else if(hour < 10){
                 hours = "0" + hour;
             }
+            else
+                hours = hour + "";
 
             if (minutes < 10){
                 time = hours + ":" + "0" + minutes;

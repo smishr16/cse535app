@@ -18,6 +18,9 @@ public class Constants {
     public static String COMMA_SEP = ", ";
     public static String QUOTE = "'";
 
+    public static String propertyEmail = "Email";
+    public static String propertyPhone = "Phone";
+
     public static void setDbPath(String packageName) {
         DB_PATH = "/data/data/"+ packageName + "/";
     }

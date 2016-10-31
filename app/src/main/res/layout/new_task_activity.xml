@@ -8,46 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/linearLayout"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/button_pick_location"
-                android:id="@+id/button_picklocation"
-                android:textAllCaps="false"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="12dp"
-                android:layout_marginLeft="12dp"/>
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/textView_location"
-                android:layout_toRightOf="@+id/button_picklocation"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignBottom="@+id/button_picklocation"
-                android:layout_alignParentTop="true"
-                android:textAlignment="center" />
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/linearLayout"
-            android:layout_alignParentStart="true">
-
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,6 +58,7 @@
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_below="@+id/textview_mot"
                 android:id="@+id/radioGroupMot">
 
@@ -106,14 +67,16 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/radiobutton_mot_walking"
                     android:text="@string/radiobutton_mot_walking"
-                    android:layout_marginLeft="12dp"/>
+                    android:layout_marginLeft="12dp"
+                    android:buttonTint="@color/black"/>
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/radiobutton_mot_cycling"
                     android:text="@string/radiobutton_mot_cycling"
-                    android:layout_marginLeft="12dp"/>
+                    android:layout_marginLeft="12dp"
+                    android:buttonTint="@color/black"/>
 
                 <RadioButton
                     android:layout_width="wrap_content"
@@ -121,18 +84,10 @@
                     android:id="@+id/radiobutton_mot_driving"
                     android:text="@string/radiobutton_mot_driving"
                     android:layout_marginBottom="12dp"
-                    android:layout_marginLeft="12dp"/>
+                    android:layout_marginLeft="12dp"
+                    android:buttonTint="@color/black"/>
 
             </RadioGroup>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/linearLayout2"
-                android:layout_alignParentStart="true">
-
-            </LinearLayout>
 
             <EditText
                 android:layout_width="wrap_content"
@@ -149,8 +104,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:id="@+id/textView_desc"
+                android:labelFor="@id/editText_desc"
                 android:text="@string/textView_desc"
-                android:layout_below="@+id/linearLayout2"
+                android:textStyle="bold"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="14dp" />
 
@@ -159,18 +115,50 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textview_mot"
                 android:text="@string/textview_mot"
+                android:textStyle="bold"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:layout_below="@+id/button_pick_time"
+                android:layout_below="@+id/linearLayout"
                 android:layout_alignStart="@+id/textView_desc" />
 
-        </RelativeLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout"
+            android:layout_below="@+id/button_pick_time"
+            android:layout_alignParentStart="true">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_pick_location"
+                android:id="@+id/button_picklocation"
+                android:textAllCaps="false"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="12dp"/>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/textView_location"
+                android:layout_toRightOf="@+id/button_picklocation"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@+id/button_picklocation"
+                android:layout_alignParentTop="true"
+                android:textAlignment="center" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -181,7 +169,9 @@
             android:textAllCaps="false"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_marginLeft="12dp"/>
+            android:layout_marginLeft="12dp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/green"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -192,7 +182,9 @@
             android:textAllCaps="false"
             android:layout_marginStart="12dp"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/button_add_reminder" />
+            android:layout_toEndOf="@+id/button_add_reminder"
+            android:textStyle="bold"
+            android:backgroundTint="@color/green"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -203,7 +195,9 @@
             android:textAllCaps="false"
             android:layout_below="@+id/button_add_reminder"
             android:layout_alignParentStart="true"
-            android:layout_marginLeft="12dp"/>
+            android:layout_marginLeft="12dp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/orange"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -213,7 +207,9 @@
             android:id="@+id/button_mark_done"
             android:textAllCaps="false"
             android:layout_below="@+id/button_save"
-            android:layout_alignStart="@+id/button_save" />
+            android:layout_alignStart="@+id/button_save"
+            android:textStyle="bold"
+            android:backgroundTint="@color/green"/>
     </RelativeLayout>
 
 </LinearLayout>
