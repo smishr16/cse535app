@@ -2,6 +2,7 @@ package asu.edu.cse535.locationawarereminder.activities;
 
 /**
  * Created by Sooraj on 10/27/2016.
+ * This class is used create a customized list view for the Nearby Places screen.
  */
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import asu.edu.cse535.locationawarereminder.R;
 
@@ -26,17 +28,19 @@ public class CustomList extends ArrayAdapter<String>{
     private final Activity context;
     private final ArrayList<String> placeName;
     private final ArrayList<String> imageId;
+    private final HashMap<String, Drawable> imageMap = new HashMap<>(); // Hashmap for caching images
+
     public CustomList(Activity context, ArrayList<String> placeName, ArrayList<String> imageId) {
         super(context, R.layout.nearby_place_item, placeName);
         this.context = context;
         this.placeName = placeName;
         this.imageId = imageId;
-
     }
+
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
-        View rowView= inflater.inflate(R.layout.nearby_place_item, null, true);
+        View rowView = inflater.inflate(R.layout.nearby_place_item, null, true);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.item_name);
         txtTitle.setText(placeName.get(position));
 
@@ -53,15 +57,20 @@ public class CustomList extends ArrayAdapter<String>{
         ImageDownloadTask(ImageView view){
             mView = view;
         }
+
         @Override
         protected Drawable doInBackground(String... params) {
             InputStream is = null;
+            String url = params[0];
+            if(imageMap.containsKey(url))
+                return imageMap.get(url);
             try {
-                is = (InputStream) new URL(params[0]).getContent();
+                is = (InputStream) new URL(url).getContent();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Drawable d = Drawable.createFromStream(is, "src_name");
+            Drawable d = Drawable.createFromStream(is, "image");
+            imageMap.put(url,d);
             return d;
         }
 
