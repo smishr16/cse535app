@@ -52,7 +52,7 @@ public class CustomList extends ArrayAdapter<String>{
         return rowView;
     }
 
-    // Thred to download image
+    // Thred to download image asynchronously
     class ImageDownloadTask extends AsyncTask<String, Integer, Drawable> {
         private ImageView mView;
         ImageDownloadTask(ImageView view){
