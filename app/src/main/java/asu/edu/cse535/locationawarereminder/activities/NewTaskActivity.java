@@ -286,7 +286,7 @@ public class NewTaskActivity extends AppCompatActivity {
             try {
                 final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
                 final Date dt = sdf.parse(time);
-                displayTime.setText(sdf.format(sdf.parse(time)) + " " + amPm);
+                displayTime.setText(sdf.format(dt) + " " + amPm);
             } catch (final ParseException e) {
                 e.printStackTrace();
             }
