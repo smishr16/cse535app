@@ -1,6 +1,8 @@
 package asu.edu.cse535.locationawarereminder.activities;
 
 import android.app.DatePickerDialog;
+import java.util.Date;
+import java.text.ParseException;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -26,6 +28,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import asu.edu.cse535.locationawarereminder.R;
@@ -160,7 +163,6 @@ public class NewTaskActivity extends AppCompatActivity {
                 dialogFragmentTime = new TimePickerDialogTheme();
                 dialogFragmentTime.show(getFragmentManager(),"Pick Time");
             }
-
         });
     }
 
@@ -241,7 +243,7 @@ public class NewTaskActivity extends AppCompatActivity {
             int day = calendar.get(Calendar.DATE);
 
 
-            datePickerDialog  = new DatePickerDialog(getActivity(),0,this,year,month,day);
+            datePickerDialog  = new DatePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog,this,year,month,day);
 
             return datePickerDialog;
         }
@@ -264,7 +266,7 @@ public class NewTaskActivity extends AppCompatActivity {
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
             TimePickerDialog timePickerDialog;
-            timePickerDialog= new TimePickerDialog(getActivity(),this,hour,minute,false);
+            timePickerDialog= new TimePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog,this,hour,minute,false);
 
             return timePickerDialog;
         }
@@ -276,14 +278,11 @@ public class NewTaskActivity extends AppCompatActivity {
             hourOfDaySelected = hourOfDay;
             minuteSelected = minute;
             String amPm = getAmPm(hourOfDay);
-            String time = getTime(hourOfDay, minute);
 
-            // APK 24+ final String
-            //final String time = hourOfDay + ":" + minute;
+            final String time = hourOfDay + ":" + minute;
             String timeText = time + " " + amPm;
             displayTime.setText(timeText);
 
-            /* Only works with APK 24+
             try {
                 final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
                 final Date dt = sdf.parse(time);
@@ -291,7 +290,7 @@ public class NewTaskActivity extends AppCompatActivity {
             } catch (final ParseException e) {
                 e.printStackTrace();
             }
-            */
+
         }
 
         // Using 24-hour time calculate 12-hour time AM/PM
@@ -306,40 +305,5 @@ public class NewTaskActivity extends AppCompatActivity {
             }
             return amPm;
         }
-
-        // Using 24-hour time convert to 12-hour time
-        public String getTime (int hour, int minutes){
-            String time;
-            String hours;
-
-            if (hour > 12){
-                if (hour >=22){
-                    hour = hour - 12;
-                    hours = hour + "";
-                }
-                else{
-                    hour = hour - 12;
-                    hours = "0" + hour;
-                }
-            }
-            else if (hour == 0){
-                hours = 12 + "";
-            }
-            else if(hour < 10){
-                hours = "0" + hour;
-            }
-            else
-                hours = hour + "";
-
-            if (minutes < 10){
-                time = hours + ":" + "0" + minutes;
-            }
-            else {
-                time = hours + ":" + minutes;
-            }
-
-            return time;
-        }
-
     }
 }
