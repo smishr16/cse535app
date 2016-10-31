@@ -8,15 +8,33 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/label_email"
+            android:id="@+id/textView_email"
+            android:gravity="center"
+            android:labelFor="@+id/editText_email"
+            android:layout_alignParentStart="true" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:ems="10"
             android:id="@+id/editText_email"
-            android:hint="@string/hint_email"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_below="@+id/textView_email" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/label_phone"
+            android:id="@+id/textView_phone"
+            android:labelFor="@+id/editText_phone"
+            android:gravity="center"
+            android:layout_below="@id/editText_email"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -24,9 +42,7 @@
             android:inputType="phone"
             android:ems="10"
             android:id="@+id/editText_phone"
-            android:hint="@string/hint_phone"
-            android:layout_below="@+id/editText_email"
-            android:layout_alignParentStart="true" />
+            android:layout_below="@+id/textView_phone" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -35,7 +51,8 @@
             android:id="@+id/button_save_settings"
             android:textAllCaps="false"
             android:text="@string/button_save"
-            android:layout_alignParentStart="true"
-            android:layout_centerInParent="true"/>
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
+
     </RelativeLayout>
 </LinearLayout>
