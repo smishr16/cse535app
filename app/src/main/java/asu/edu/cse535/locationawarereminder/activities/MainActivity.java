@@ -12,10 +12,20 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -23,9 +33,59 @@ import asu.edu.cse535.locationawarereminder.services.CurrentLocationService;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Button button;
+    private EditText time;
+    private TextView finalResult;
+    public static ArrayList<String> t_list;
+    Context c;
+
     SQLiteDatabase db;
     static double currLatitude;
     static double currLongitude;
+
+    String task_type;
+    int new_task_added = 0;
+
+    public void load_tasks_from_db() {
+        String new_task;
+        final ListView lv = (ListView) findViewById(R.id.listview);
+        //Button btn1 = new Button(MainActivity.this);
+        RelativeLayout rl = (RelativeLayout) findViewById (R.id.rel_layout_id);
+
+        if(new_task_added==1){
+            new_task = DBManager.getTaskname();
+            Log.v("new_task ",new_task);
+            t_list.add(new_task);
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this,R.layout.simplerow, t_list);
+            lv.setAdapter(arrayAdapter);
+            return;
+
+        }
+        t_list= DBManager.get_all_tasks();
+        if(t_list.size()>0){
+            Log.v("task_count", Integer.toString(t_list.size()));
+
+//            String[] fruits = new String[] {
+//                    "Cape Gooseberry",
+//                    "Capuli cherry"
+//            };
+            //String fruits = "Task";
+
+            // Create a List from String Array elements
+            final List<String> fruits_list = new ArrayList<String>(t_list);
+
+            //RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            // btn.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            // buttonParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            //addContentView(btn,buttonParams);
+            //LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this,R.layout.simplerow, t_list);
+            //rl.addView(btn);
+            //ll.addView(btn1);
+            lv.setAdapter(arrayAdapter);
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, NewTaskActivity.class);
                 intent.putExtra("Mode", R.string.new_task);
-                startActivity(intent);
+                startActivityForResult(intent,1);
             }
         });
 
@@ -60,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 currLongitude = msg.getData().getDouble("longitude");
             }
         };
+
+        load_tasks_from_db();
 
         Intent serviceIntent;
         serviceIntent = new Intent(MainActivity.this.getBaseContext(), CurrentLocationService.class);
@@ -110,6 +172,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v("back to mainactivity","back to mainactivity");
+        Log.v("back to mainactivity","back to mainactivity");
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                String task_type=data.getStringExtra("task_type");
+                if(task_type.equals("new_task")){
+                    Toast.makeText(MainActivity.this, "task added", Toast.LENGTH_SHORT).show();
+                    new_task_added=1;
+                    load_tasks_from_db();
+                    new_task_added=1;
+                    //AsyncTaskRunner runner = new AsyncTaskRunner( c );
+                    //runner.execute();
+                }
+            }
+        }
     }
 
     @Override

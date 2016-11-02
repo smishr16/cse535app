@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -133,8 +134,16 @@ public class NewTaskActivity extends AppCompatActivity {
                     t.setStatus("Created");
                     t.setCreatedDate(c.getTime());
                     DBManager.insertIntoTask(t);
+
                     int taskId = DBManager.getLastInserted();
                     startLocationListener(taskId, t.getDesc(), t.getLat(), t.getLng());
+
+                    Intent intent = new Intent();
+                    intent.putExtra("task_type","new_task");
+                    Log.v("sending to main","sending to main");
+                    setResult(android.app.Activity.RESULT_OK,intent);
+                    Log.v("before finish","before finish");
+
                     finish();
                 }
             }

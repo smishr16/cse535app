@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class DBManager {
     private static SQLiteDatabase db;
     private static Context dbContext;
     private static boolean DEBUG = false;
+    public static ArrayList<String> task_list = new ArrayList<String>();
 
     public DBManager(Context context){
         dbContext = context;
@@ -94,6 +96,48 @@ public class DBManager {
             e.printStackTrace();
             Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static ArrayList<String> get_all_tasks(){
+        String query = "select *" + " " + "from" + " "+ Constants.TABLE_TASK ;
+        Cursor c;
+        db.beginTransaction();
+        c= db.rawQuery(query,null);
+        if (c.moveToFirst()){
+            do{
+                String temp = c.getString(c.getColumnIndex("Description"));
+                task_list.add(temp);
+
+
+
+                // do what ever you want here
+            }while(c.moveToNext());
+
+
+        }
+        db.endTransaction();
+        return task_list;
+
+    }
+
+    public static String getTaskname(){
+        String query = "select *" + " " + "from" + " "+ Constants.TABLE_TASK + " "+ "where" +
+                " "+Task.COLUMN_TASK_ID + " " + " = (select max("+ Task.COLUMN_TASK_ID +") from" +" " +Constants.TABLE_TASK + ")";
+        Cursor c;
+
+        db.beginTransaction();
+        Log.v("Query",query);
+
+        c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        String temp = c.getString(c.getColumnIndex("Description"));
+
+
+        Log.v("task_name",temp);
+        db.endTransaction();
+
+        return temp;
     }
 
     private static void createPropertiesTable() {
