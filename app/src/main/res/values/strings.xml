@@ -4,7 +4,7 @@
     <string name="action_nearby_places">Nearby Places</string>
     <string name="action_my_locations">My Locations</string>
     <string name="action_history">History</string>
-    <string name="button_pick_location">Pick Location</string>
+    <string name="button_pick_location">Choose Location</string>
     <string name="button_add_reminder">Save Reminder</string>
     <string name="button_save">Save</string>
     <string name="button_get_directions">Get Directions</string>

@@ -228,4 +228,20 @@ public class DBManager {
         return count;
     }
 
+    public static int getLastInserted() {
+        String SEARCH_TABLE_QUERY = "SELECT MAX(" + Task.COLUMN_TASK_ID + ") AS taskId FROM " + Constants.TABLE_TASK;
+        int taskId = 0;
+        try {
+            Cursor c = db.rawQuery(SEARCH_TABLE_QUERY, null);
+            if (c.moveToFirst()) {
+                taskId = c.getInt(c.getColumnIndex("taskId"));
+            }
+            c.close();
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        return taskId;
+    }
 }

@@ -1,8 +1,6 @@
 package asu.edu.cse535.locationawarereminder.activities;
 
 import android.app.DatePickerDialog;
-import java.util.Date;
-import java.text.ParseException;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -28,12 +26,15 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
 import asu.edu.cse535.locationawarereminder.database.Task;
+import asu.edu.cse535.locationawarereminder.services.LocationListenerService;
 
 //import android.support.v4.app.DialogFragment; Using DialogFragment below for Date/Time Picker
 
@@ -132,8 +133,26 @@ public class NewTaskActivity extends AppCompatActivity {
                     t.setStatus("Created");
                     t.setCreatedDate(c.getTime());
                     DBManager.insertIntoTask(t);
+                    int taskId = DBManager.getLastInserted();
+                    startLocationListener(taskId, t.getDesc(), t.getLat(), t.getLng());
                     finish();
                 }
+            }
+
+            // Method to start location listener service
+            private void startLocationListener(final int taskId, final String taskDesc, final double lat, final double lng) {
+
+                Thread t = new Thread(){
+                    public void run(){
+                        Intent serviceIntent = new Intent(NewTaskActivity.this.getBaseContext(), LocationListenerService.class);
+                        serviceIntent.putExtra("task_id", taskId);
+                        serviceIntent.putExtra("task_desc", taskDesc);
+                        serviceIntent.putExtra("lat", lat);
+                        serviceIntent.putExtra("lng", lng);
+                        startService(serviceIntent);
+                    }
+                };
+                t.start();
             }
 
             private void formatDateInput(String dateVal) {
