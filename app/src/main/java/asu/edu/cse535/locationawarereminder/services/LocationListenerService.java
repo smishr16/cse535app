@@ -54,6 +54,7 @@ public class LocationListenerService extends Service {
         intent.putExtra("taskId", task_id);
         intent.putExtra("taskDesc", desc);
         PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
+
         float radius = 100;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -61,11 +62,11 @@ public class LocationListenerService extends Service {
         locMgr.addProximityAlert(lat, lng, radius, -1, pi);
         IntentFilter filter = new IntentFilter("lar.proximityalert");
         registerReceiver(new ProximityIntentReceiver(), filter);
+        /*PendingIntent piRemove = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
+        locMgr.removeProximityAlert(piRemove);*/
     }
 
     public class ProximityIntentReceiver extends BroadcastReceiver {
-
-        private static final int NOTIFICATION_ID = 1000;
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -75,27 +76,25 @@ public class LocationListenerService extends Service {
             Boolean entering = intent.getBooleanExtra(key, false);
             if (entering) {
                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+                PendingIntent notificationIntent = PendingIntent.getActivity(context, 0, intent, 0);
                 Notification.Builder builder = new Notification.Builder(LocationListenerService.this);
 
                 builder.setAutoCancel(true);
                 builder.setContentTitle("LAR");
                 builder.setContentText("You have open reminders for this location");
                 builder.setSmallIcon(R.drawable.common_ic_googleplayservices);
-                builder.setContentIntent(pendingIntent);
+                builder.setContentIntent(notificationIntent);
                 builder.setOngoing(false);
                 builder.setSubText("Description : " + desc);   //API level 16
-                notificationManager.notify(11, builder.build());
+                notificationManager.notify(task_id, builder.build());
 
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                Intent removalIntent = new Intent("lar.proximityalert");
-                intent.putExtra("taskId", task_id);
-                intent.putExtra("taskDesc", desc);
-                PendingIntent operation = PendingIntent.getBroadcast(LocationListenerService.this, task_id, removalIntent, 0);
+                //PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
+                //LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
                 if (ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-                locationManager.removeProximityAlert(operation);
+                //locMgr.removeProximityAlert(removePi);
+                context.unregisterReceiver(this);
             }
         }
     }

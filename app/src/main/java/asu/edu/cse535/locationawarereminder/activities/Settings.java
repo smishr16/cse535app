@@ -55,14 +55,16 @@ public class Settings extends AppCompatActivity {
 
             private boolean validateFields(){
                 boolean isValidated = true;
-                if(TextUtils.isEmpty(editText_email.getText().toString()) || !Patterns.EMAIL_ADDRESS.matcher(editText_email.getText().toString()).matches()) {
-                    Toast.makeText(Settings.this, "Provide valid Email", Toast.LENGTH_LONG).show();
-                    isValidated = false;
-                }
-                if(TextUtils.isEmpty(editText_phone.getText().toString()) || !Patterns.PHONE.matcher(editText_phone.getText().toString()).matches()) {
-                    Toast.makeText(Settings.this, "Provide valid Phone", Toast.LENGTH_LONG).show();
-                    isValidated = false;
-                }
+                if(!TextUtils.isEmpty(editText_email.getText().toString()))
+                    if(!Patterns.EMAIL_ADDRESS.matcher(editText_email.getText().toString()).matches()) {
+                        Toast.makeText(Settings.this, "Provide valid Email", Toast.LENGTH_LONG).show();
+                        isValidated = false;
+                    }
+                if(!TextUtils.isEmpty(editText_phone.getText().toString()))
+                    if(!Patterns.PHONE.matcher(editText_phone.getText().toString()).matches()) {
+                        Toast.makeText(Settings.this, "Provide valid Phone", Toast.LENGTH_LONG).show();
+                        isValidated = false;
+                    }
                 return isValidated;
             }
         });

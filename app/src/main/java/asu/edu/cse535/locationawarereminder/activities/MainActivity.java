@@ -25,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -45,47 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
     String task_type;
     int new_task_added = 0;
-
-    public void load_tasks_from_db() {
-        String new_task;
-        final ListView lv = (ListView) findViewById(R.id.listview);
-        //Button btn1 = new Button(MainActivity.this);
-        RelativeLayout rl = (RelativeLayout) findViewById (R.id.rel_layout_id);
-
-        if(new_task_added==1){
-            new_task = DBManager.getTaskname();
-            Log.v("new_task ",new_task);
-            t_list.add(new_task);
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this,R.layout.simplerow, t_list);
-            lv.setAdapter(arrayAdapter);
-            return;
-
-        }
-        t_list= DBManager.get_all_tasks();
-        if(t_list.size()>0){
-            Log.v("task_count", Integer.toString(t_list.size()));
-
-//            String[] fruits = new String[] {
-//                    "Cape Gooseberry",
-//                    "Capuli cherry"
-//            };
-            //String fruits = "Task";
-
-            // Create a List from String Array elements
-            final List<String> fruits_list = new ArrayList<String>(t_list);
-
-            //RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            // btn.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            // buttonParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            //addContentView(btn,buttonParams);
-            //LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this,R.layout.simplerow, t_list);
-            //rl.addView(btn);
-            //ll.addView(btn1);
-            lv.setAdapter(arrayAdapter);
-
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +99,30 @@ public class MainActivity extends AppCompatActivity {
         bindService(serviceIntent,serve, Context.BIND_AUTO_CREATE);
     }
 
+    public void load_tasks_from_db() {
+        String new_task;
+        final ListView lv = (ListView) findViewById(R.id.listview);
+        //Button btn1 = new Button(MainActivity.this);
+        RelativeLayout rl = (RelativeLayout) findViewById (R.id.rel_layout_id);
+
+        if(new_task_added==1){
+            new_task = DBManager.getTaskname();
+            Log.v("new_task ",new_task);
+            t_list.add(new_task);
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this,R.layout.simplerow, t_list);
+            lv.setAdapter(arrayAdapter);
+            return;
+
+        }
+        t_list= DBManager.get_all_tasks();
+        if(t_list.size()>0){
+            Log.v("task_count", Integer.toString(t_list.size()));
+            // Create a List from String Array elements
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this,R.layout.simplerow, t_list);
+            lv.setAdapter(arrayAdapter);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -162,13 +144,17 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(id == R.id.action_nearby_places) {
             if(currLatitude == 0.0 && currLongitude == 0.0)
-                Toast.makeText(MainActivity.this, "Waiting for location. Try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Waiting for location. Make sure your location services are enabled and try again.", Toast.LENGTH_SHORT).show();
             else{
                 Intent intent = new Intent(MainActivity.this, Nearby.class);
                 intent.putExtra("currLat", currLatitude);
                 intent.putExtra("currLong", currLongitude);
                 startActivity(intent);
             }
+        }
+        else if(id == R.id.action_my_locations) {
+            Intent intent = new Intent(MainActivity.this, MyLocations.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -191,6 +177,17 @@ public class MainActivity extends AppCompatActivity {
                     //runner.execute();
                 }
             }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        final ListView lv = (ListView) findViewById(R.id.listview);
+        ArrayList<String> task_list = DBManager.get_all_tasks();
+        if(task_list.size()>0) {
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, task_list);
+            lv.setAdapter(arrayAdapter);
         }
     }
 

@@ -23,14 +23,14 @@ import java.util.HashMap;
 
 import asu.edu.cse535.locationawarereminder.R;
 
-public class CustomList extends ArrayAdapter<String>{
+public class NearbyCustomList extends ArrayAdapter<String>{
 
     private final Activity context;
     private final ArrayList<String> placeName;
     private final ArrayList<String> imageId;
     private final HashMap<String, Drawable> imageMap = new HashMap<>(); // Hashmap for caching images
 
-    public CustomList(Activity context, ArrayList<String> placeName, ArrayList<String> imageId) {
+    public NearbyCustomList(Activity context, ArrayList<String> placeName, ArrayList<String> imageId) {
         super(context, R.layout.nearby_place_item, placeName);
         this.context = context;
         this.placeName = placeName;

@@ -15,6 +15,14 @@ public class FavouriteLocations {
     private double latitude;
     private double longitude;
 
+    public FavouriteLocations() {}
+
+    public FavouriteLocations(String description, double latitude, double longitude) {
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public int getLocId() {
         return locId;
     }
@@ -30,4 +38,21 @@ public class FavouriteLocations {
     public double getLongitude() {
         return longitude;
     }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLocId(int locId) {
+        this.locId = locId;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
 }

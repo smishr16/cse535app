@@ -18,7 +18,6 @@ public class DBManager {
     private static SQLiteDatabase db;
     private static Context dbContext;
     private static boolean DEBUG = false;
-    public static ArrayList<String> task_list = new ArrayList<String>();
 
     public DBManager(Context context){
         dbContext = context;
@@ -29,6 +28,7 @@ public class DBManager {
         db = SQLiteDatabase.openOrCreateDatabase(Constants.DB_PATH + Constants.DB_NAME, null);
         createTaskTable();
         createPropertiesTable();
+        createFavLocsTable();
         initializeProperties();
     }
 
@@ -99,6 +99,7 @@ public class DBManager {
     }
 
     public static ArrayList<String> get_all_tasks(){
+        ArrayList<String> task_list = new ArrayList<String>();
         String query = "select *" + " " + "from" + " "+ Constants.TABLE_TASK ;
         Cursor c;
         db.beginTransaction();
@@ -287,5 +288,105 @@ public class DBManager {
         }
 
         return taskId;
+    }
+
+    public static void createFavLocsTable() {
+        String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_MY_LOCATIONS + " ( " +
+                FavouriteLocations.COLUMN_LOC_ID + " " + Constants.DATATYPE_INT  + " PRIMARY KEY autoincrement" + Constants.COMMA_SEP +
+                FavouriteLocations.COLUMN_LOC_DESC + " " + Constants.DATATYPE_STRING + " NOT NULL " + Constants.COMMA_SEP +
+                FavouriteLocations.COLUMN_LOC_LAT + " " + Constants.DATATYPE_DOUBLE + " NOT NULL " + Constants.COMMA_SEP +
+                FavouriteLocations.COLUMN_LOC_LONG + " " + Constants.DATATYPE_DOUBLE + " NOT NULL )";
+
+        try{
+            db.beginTransaction();
+            try {
+                db.execSQL(CREATE_TABLE_QUERY);
+                db.setTransactionSuccessful();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Table My Locations created successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (SQLiteException e) {
+                e.printStackTrace();
+                Toast.makeText(dbContext , e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static ArrayList<FavouriteLocations> getFavLocations() {
+        ArrayList<FavouriteLocations> favLocs = new ArrayList<>();
+        String SEARCH_TABLE_QUERY = "SELECT * FROM " + Constants.TABLE_MY_LOCATIONS;
+        try {
+            Cursor c = db.rawQuery(SEARCH_TABLE_QUERY, null);
+            if (c.moveToFirst()) {
+                do{
+                    FavouriteLocations favLoc = new FavouriteLocations();
+                    favLoc.setLocId(c.getInt(c.getColumnIndex(FavouriteLocations.COLUMN_LOC_ID)));
+                    favLoc.setDescription(c.getString(c.getColumnIndex(FavouriteLocations.COLUMN_LOC_DESC)));
+                    favLoc.setLatitude(c.getDouble(c.getColumnIndex(FavouriteLocations.COLUMN_LOC_LAT)));
+                    favLoc.setLongitude(c.getDouble(c.getColumnIndex(FavouriteLocations.COLUMN_LOC_LONG)));
+
+                    favLocs.add(favLoc);
+                } while(c.moveToNext());
+            }
+            c.close();
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        return favLocs;
+    }
+
+    public static void insertIntoFavLocations(FavouriteLocations location) {
+        String INSERT_TABLE_QUERY = "INSERT INTO " + Constants.TABLE_MY_LOCATIONS + " (" +
+                FavouriteLocations.COLUMN_LOC_DESC + Constants.COMMA_SEP + FavouriteLocations.COLUMN_LOC_LAT + Constants.COMMA_SEP +
+                FavouriteLocations.COLUMN_LOC_LONG + ") VALUES (" + Constants.QUOTE + location.getDescription() + Constants.QUOTE + Constants.COMMA_SEP +
+                location.getLatitude()  + Constants.COMMA_SEP + location.getLongitude() + ")";
+        try {
+            db.beginTransaction();
+            try {
+                db.execSQL(INSERT_TABLE_QUERY);
+                db.setTransactionSuccessful();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Favourite Location added successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (SQLiteException e) {
+                e.printStackTrace();
+                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void deleteFromFavLocation(FavouriteLocations locToDelete) {
+        String DELETE_QUERY = "DELETE FROM " + Constants.TABLE_MY_LOCATIONS + " WHERE " +
+                FavouriteLocations.COLUMN_LOC_ID + " = " + locToDelete.getLocId();
+        try{
+            db.beginTransaction();
+            try{
+                db.execSQL(DELETE_QUERY);
+                db.setTransactionSuccessful();
+            }catch(SQLiteException e){
+                e.printStackTrace();
+                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        finally {
+            db.endTransaction();
+        }
     }
 }

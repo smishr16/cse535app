@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:baselineAligned="true">
+
+    <Button
+        android:id="@+id/button_loc_delete"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/button_delete"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/red"
+        android:textStyle="bold"
+        android:focusable="false"
+        android:onClick="onLocDeleteClick"
+        />
+
+    <TextView
+        android:id="@+id/location_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:layout_gravity="fill"
+        />
+
+</LinearLayout>

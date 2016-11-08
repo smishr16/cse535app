@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_locName"
+            android:text="@string/textview_addlocation_name"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText_locName"
+            android:layout_below="@+id/textView_locName"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_pick_loc"
+            android:text="@string/button_pick_location"
+            android:textAllCaps="false"
+            android:layout_below="@+id/editText_locName"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/textView_locDesc"
+            android:layout_alignBottom="@+id/button_pick_loc"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/button_pick_loc"/>
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_save_loc"
+            android:text="@string/button_addlocation_add"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:backgroundTint="@color/green"/>
+    </RelativeLayout>
+</LinearLayout>

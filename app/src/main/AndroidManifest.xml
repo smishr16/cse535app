@@ -44,6 +44,18 @@
             android:parentActivityName=".activities.MainActivity" >
         </activity>
 
+        <activity
+            android:name=".activities.MyLocations"
+            android:label="@string/action_my_locations"
+            android:parentActivityName=".activities.MainActivity" >
+        </activity>
+
+        <activity
+            android:name=".activities.AddLocation"
+            android:label="@string/action_add_location"
+            android:parentActivityName=".activities.MyLocations" >
+        </activity>
+
         <service
             android:name=".services.CurrentLocationService"
             android:enabled="true"

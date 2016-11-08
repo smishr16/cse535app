@@ -83,7 +83,7 @@ public class Nearby extends AppCompatActivity {
     // Display place list
     private void displayList() {
 
-        CustomList adapter = new  CustomList(this, placesList, placeIconList);
+        NearbyCustomList adapter = new NearbyCustomList(this, placesList, placeIconList);
         ListView listView = (ListView) findViewById(R.id.listView_nearby_places);
         listView.setAdapter(adapter);
 
