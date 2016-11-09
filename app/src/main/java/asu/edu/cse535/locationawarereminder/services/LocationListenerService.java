@@ -16,6 +16,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
 import asu.edu.cse535.locationawarereminder.R;
+import asu.edu.cse535.locationawarereminder.activities.NewTaskActivity;
+import asu.edu.cse535.locationawarereminder.database.DBManager;
+import asu.edu.cse535.locationawarereminder.database.Task;
 
 /**
  * Created by Sooraj on 10/31/2016.
@@ -75,23 +78,31 @@ public class LocationListenerService extends Service {
             String desc = intent.getExtras().getString("taskDesc");
             Boolean entering = intent.getBooleanExtra(key, false);
             if (entering) {
-                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                PendingIntent notificationIntent = PendingIntent.getActivity(context, 0, intent, 0);
-                Notification.Builder builder = new Notification.Builder(LocationListenerService.this);
+                //Check if task status is still "Created"
+                Task t = DBManager.getTaskByTaskId(task_id);
+                if(!t.getStatus().equals("Completed") && !t.getStatus().equals("Removed")){
+                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    Intent openTaskIntent = new Intent(LocationListenerService.this, NewTaskActivity.class);
+                    openTaskIntent.putExtra("taskid", task_id);
+                    openTaskIntent.putExtra("Mode", R.string.open_from_notif);
+                    openTaskIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    PendingIntent notificationIntent = PendingIntent.getActivity(context, task_id, openTaskIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    Notification.Builder builder = new Notification.Builder(LocationListenerService.this);
 
-                builder.setAutoCancel(true);
-                builder.setContentTitle("LAR");
-                builder.setContentText("You have open reminders for this location");
-                builder.setSmallIcon(R.drawable.common_ic_googleplayservices);
-                builder.setContentIntent(notificationIntent);
-                builder.setOngoing(false);
-                builder.setSubText("Description : " + desc);   //API level 16
-                notificationManager.notify(task_id, builder.build());
+                    builder.setAutoCancel(true);
+                    builder.setContentTitle("LAR");
+                    builder.setContentText("You have open reminders for this location");
+                    builder.setSmallIcon(R.drawable.common_ic_googleplayservices);
+                    builder.setContentIntent(notificationIntent);
+                    builder.setOngoing(false);
+                    builder.setSubText("Description : " + desc);   //API level 16
+                    notificationManager.notify(task_id, builder.build());
 
-                //PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
-                //LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
-                if (ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
+                    //PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
+                    //LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    if (ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
                 }
                 //locMgr.removeProximityAlert(removePi);
                 context.unregisterReceiver(this);

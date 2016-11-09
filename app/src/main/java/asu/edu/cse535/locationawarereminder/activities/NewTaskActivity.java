@@ -46,7 +46,7 @@ public class NewTaskActivity extends AppCompatActivity {
 
     static boolean DEBUG = false;
     static final int PLACE_PICKER_REQUEST = 1;
-    static int mode;
+    int mode;
     static Button buttonSave, buttonGetDirections, buttonMarkDone, buttonPickLocation, buttonAddReminder, buttonPickDate, buttonPickTime;
     static RadioGroup radioGroupMot;
     static RadioButton radioWalk, radioCycle, radioDrive;
@@ -65,11 +65,6 @@ public class NewTaskActivity extends AppCompatActivity {
         // Display up button
         if(getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Read extras from Intent
-        Bundle extras = getIntent().getExtras();
-        if(extras != null)
-            mode = extras.getInt("Mode");
 
         buttonSave = (Button)findViewById(R.id.button_save);
         buttonGetDirections = (Button)findViewById(R.id.button_get_directions);
@@ -124,11 +119,11 @@ public class NewTaskActivity extends AppCompatActivity {
                         c.set(year, month, dateField, hourOfDaySelected, minuteSelected);
                         t.setTaskDate(c.getTime());
                     }
-                    if(radioWalk.isSelected())
+                    if(radioWalk.isChecked())
                         t.setMot("Walking");
-                    else if(radioCycle.isSelected())
+                    else if(radioCycle.isChecked())
                         t.setMot("Cycling");
-                    else if(radioDrive.isSelected())
+                    else if(radioDrive.isChecked())
                         t.setMot("Driving");
                     t.setStatus("Created");
                     t.setCreatedDate(c.getTime());
@@ -182,7 +177,6 @@ public class NewTaskActivity extends AppCompatActivity {
         });
 
         //Add onClick for Pick Time button
-
         buttonPickTime.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -193,6 +187,7 @@ public class NewTaskActivity extends AppCompatActivity {
         });
     }
 
+    /* Check andatory fields */
     private boolean checkMandatory(){
         //Check all mandatory values here
         if(reminderDesc.getText().toString().isEmpty()){
@@ -227,6 +222,11 @@ public class NewTaskActivity extends AppCompatActivity {
 
     private void hideShowControls(Context context){
         //TO:DO Implement for other types of context
+        // Read extras from Intent
+        Bundle extras = getIntent().getExtras();
+        if(extras != null)
+            mode = extras.getInt("Mode");
+
         if(mode == R.string.new_task){
             hideControlsForNewTask(context);
             setTitle(R.string.new_task);
@@ -237,6 +237,44 @@ public class NewTaskActivity extends AppCompatActivity {
             t.setLat(getIntent().getDoubleExtra("Latitude", 0.0));
             t.setLng(getIntent().getDoubleExtra("Longitude", 0.0));
         }
+        else if(mode == R.string.open_from_notif) {
+            int task_id = getIntent().getExtras().getInt("taskid");
+            Task t = DBManager.getTaskByTaskId(task_id);
+            if(t.getDesc() != null)
+                reminderDesc.setText(t.getDesc());
+            TextView date = (TextView) findViewById(R.id.textView_date);
+            TextView time = (TextView) findViewById(R.id.textView_time);
+            if(t.getTaskDate() != null) {
+                date.setText(t.getTaskDate().toString().split(" ")[0]);
+                time.setText(t.getTaskDate().toString().split(" ")[1]);
+            }
+            TextView location = (TextView) findViewById(R.id.textView_location);
+            if(t.getLng() != 0.0 && t.getLat() != 0.0)
+                location.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
+            if(t.getMot().equals("Walking"))
+                radioWalk.setChecked(true);
+            else if(t.getMot().equals("Cycling"))
+                radioCycle.setChecked(true);
+            else if(t.getMot().equals("Driving"))
+                radioDrive.setChecked(true);
+            hideControlsForViewTask();
+            setTitle(R.string.open_from_notif);
+        }
+    }
+
+    private void hideControlsForViewTask() {
+        buttonMarkDone.setVisibility(View.VISIBLE);
+        buttonGetDirections.setVisibility(View.VISIBLE);
+        buttonSave.setVisibility(View.GONE);
+        buttonAddReminder.setVisibility(View.GONE);
+        reminderDesc.setEnabled(false);
+        buttonPickDate.setEnabled(false);
+        buttonPickTime.setEnabled(false);
+        buttonPickLocation.setEnabled(false);
+        radioGroupMot.setEnabled(false);
+        radioDrive.setEnabled(false);
+        radioCycle.setEnabled(false);
+        radioWalk.setEnabled(false);
     }
 
     private static void hideControlsForNewTask(Context context){
@@ -299,7 +337,6 @@ public class NewTaskActivity extends AppCompatActivity {
             TextView displayDate = (TextView)getActivity().findViewById(R.id.textView_date);
             String dateText = (month+1) + "/" + day + "/" + year;
             displayDate.setText(dateText);
-
         }
     }
 
@@ -336,7 +373,6 @@ public class NewTaskActivity extends AppCompatActivity {
             } catch (final ParseException e) {
                 e.printStackTrace();
             }
-
         }
 
         // Using 24-hour time calculate 12-hour time AM/PM

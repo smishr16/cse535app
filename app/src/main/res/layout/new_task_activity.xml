@@ -206,10 +206,10 @@
             android:text="@string/button_mark_done"
             android:id="@+id/button_mark_done"
             android:textAllCaps="false"
-            android:layout_below="@+id/button_save"
-            android:layout_alignStart="@+id/button_save"
             android:textStyle="bold"
-            android:backgroundTint="@color/green"/>
+            android:backgroundTint="@color/green"
+            android:layout_below="@+id/button_add_reminder"
+            android:layout_toEndOf="@+id/button_get_directions" />
     </RelativeLayout>
 
 </LinearLayout>

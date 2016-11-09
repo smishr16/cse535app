@@ -106,7 +106,7 @@ public class Nearby extends AppCompatActivity {
             try{
                 String urlString = "https://maps.googleapis.com/maps/api/place/nearbysearch/xml?";
                 urlString += "location=" + currLatitude + "," + currLongitude;
-                urlString += "&radius=5000";
+                urlString += "&radius=1000";
                 urlString += "&key=AIzaSyC54ZbYtQCj5KYdYo7hdawgFDCQXZyoErI";
                 if(nextToken != "")
                     urlString += "&pagetoken=" + nextToken;

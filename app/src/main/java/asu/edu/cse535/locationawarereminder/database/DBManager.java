@@ -141,6 +141,32 @@ public class DBManager {
         return temp;
     }
 
+    public static Task getTaskByTaskId(int task_id) {
+        String SELECT_QUERY = "SELECT * FROM " + Constants.TABLE_TASK + " WHERE " +
+                Task.COLUMN_TASK_ID + " = " + task_id;
+        Task t = new Task();
+        try {
+            Cursor c = db.rawQuery(SELECT_QUERY, null);
+            if(c.moveToFirst()){
+                t.setDesc(c.getString(c.getColumnIndex(Task.COLUMN_DESC)));
+                t.setLat(c.getDouble(c.getColumnIndex(Task.COLUMN_LAT)));
+                t.setLng(c.getDouble(c.getColumnIndex(Task.COLUMN_LONG)));
+                t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
+                //t.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE))));
+                t.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
+                //t.setTaskDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE))));
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        } /*catch (ParseException e) {
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }*/
+
+        return t;
+    }
+
     private static void createPropertiesTable() {
         String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PROPERTIES + " ( " +
                 Properties.COLUMN_NAME + " " + Constants.DATATYPE_STRING + " PRIMARY KEY" + Constants.COMMA_SEP +
