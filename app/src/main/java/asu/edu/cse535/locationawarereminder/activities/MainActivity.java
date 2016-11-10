@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 String task_type=data.getStringExtra("task_type");
                 if(task_type.equals("new_task")){
-                    Toast.makeText(MainActivity.this, "task added", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "task added", Toast.LENGTH_SHORT).show();
                     new_task_added=1;
                     load_tasks_from_db();
                     new_task_added=1;

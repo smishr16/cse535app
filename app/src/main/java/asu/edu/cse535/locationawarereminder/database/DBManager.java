@@ -8,7 +8,10 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Sooraj on 10/20/2016.
@@ -148,21 +151,26 @@ public class DBManager {
         try {
             Cursor c = db.rawQuery(SELECT_QUERY, null);
             if(c.moveToFirst()){
+                String actualFormat = "EEE MMM dd HH:mm:ss Z yyyy";
+                Date storedDate;
                 t.setDesc(c.getString(c.getColumnIndex(Task.COLUMN_DESC)));
                 t.setLat(c.getDouble(c.getColumnIndex(Task.COLUMN_LAT)));
                 t.setLng(c.getDouble(c.getColumnIndex(Task.COLUMN_LONG)));
                 t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
-                //t.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE))));
+                storedDate = new SimpleDateFormat(actualFormat).parse(c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE)));
+                t.setCreatedDate(storedDate);
                 t.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
-                //t.setTaskDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE))));
+                storedDate = new SimpleDateFormat(actualFormat).parse(c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE)));
+                t.setTaskDate(storedDate);
+
             }
         } catch(SQLException e) {
             e.printStackTrace();
             Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-        } /*catch (ParseException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
             Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-        }*/
+        }
 
         return t;
     }

@@ -238,25 +238,42 @@ public class NewTaskActivity extends AppCompatActivity {
             t.setLng(getIntent().getDoubleExtra("Longitude", 0.0));
         }
         else if(mode == R.string.open_from_notif) {
+            String formattedDate;
+
             int task_id = getIntent().getExtras().getInt("taskid");
             Task t = DBManager.getTaskByTaskId(task_id);
+
             if(t.getDesc() != null)
                 reminderDesc.setText(t.getDesc());
+
             TextView date = (TextView) findViewById(R.id.textView_date);
             TextView time = (TextView) findViewById(R.id.textView_time);
+            /* Convert date to display format */
             if(t.getTaskDate() != null) {
-                date.setText(t.getTaskDate().toString().split(" ")[0]);
-                time.setText(t.getTaskDate().toString().split(" ")[1]);
+                String displayFormat = "MM/dd/yyyy HH:mm:ss";
+                formattedDate = new SimpleDateFormat(displayFormat).format(t.getTaskDate());
+                String datePart = formattedDate.split(" ")[0];
+                date.setText(datePart);
+                String timepart = formattedDate.split(" ")[1];
+                int hour = Integer.parseInt(timepart.split(":")[0]);
+                String amPm = getAmPm(hour);
+                if(hour > 12)
+                    hour -= 12;
+                timepart = (hour<10 ? "0"+hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
+                time.setText(timepart);
             }
+
             TextView location = (TextView) findViewById(R.id.textView_location);
             if(t.getLng() != 0.0 && t.getLat() != 0.0)
                 location.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
+
             if(t.getMot().equals("Walking"))
                 radioWalk.setChecked(true);
             else if(t.getMot().equals("Cycling"))
                 radioCycle.setChecked(true);
             else if(t.getMot().equals("Driving"))
                 radioDrive.setChecked(true);
+
             hideControlsForViewTask();
             setTitle(R.string.open_from_notif);
         }
@@ -374,18 +391,18 @@ public class NewTaskActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
 
-        // Using 24-hour time calculate 12-hour time AM/PM
-        public String getAmPm (int hour){
-            String amPm;
+    // Using 24-hour time calculate 12-hour time AM/PM
+    public static String getAmPm (int hour){
+        String amPm;
 
-            if (hour >= 12) {
-                amPm = "PM";
-            }
-            else {
-                amPm = "AM";
-            }
-            return amPm;
+        if (hour >= 12) {
+            amPm = "PM";
         }
+        else {
+            amPm = "AM";
+        }
+        return amPm;
     }
 }
