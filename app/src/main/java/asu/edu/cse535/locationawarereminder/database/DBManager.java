@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -157,12 +158,17 @@ public class DBManager {
                 t.setLat(c.getDouble(c.getColumnIndex(Task.COLUMN_LAT)));
                 t.setLng(c.getDouble(c.getColumnIndex(Task.COLUMN_LONG)));
                 t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
-                storedDate = new SimpleDateFormat(actualFormat).parse(c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE)));
-                t.setCreatedDate(storedDate);
+                String createdDate = c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE));
+                if(!TextUtils.isEmpty(createdDate) && !createdDate.equals("null")){
+                    storedDate = new SimpleDateFormat(actualFormat).parse(createdDate);
+                    t.setCreatedDate(storedDate);
+                }
                 t.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
-                storedDate = new SimpleDateFormat(actualFormat).parse(c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE)));
-                t.setTaskDate(storedDate);
-
+                String taskDate = c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE));
+                if(!TextUtils.isEmpty(taskDate) && !taskDate.equals("null")){
+                    storedDate = new SimpleDateFormat(actualFormat).parse(taskDate);
+                    t.setTaskDate(storedDate);
+                }
             }
         } catch(SQLException e) {
             e.printStackTrace();

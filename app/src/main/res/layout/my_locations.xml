@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listView_my_locations"
-        android:focusable="true"/>
+        android:focusable="true"
+        android:layout_marginLeft="7dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_my_location"
