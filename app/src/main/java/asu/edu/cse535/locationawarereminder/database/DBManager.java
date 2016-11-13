@@ -429,4 +429,125 @@ public class DBManager {
             db.endTransaction();
         }
     }
+
+    private static void createPreviousTaskTable(){
+        String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PREVIOUS_TASK + " ( " +
+                Task.COLUMN_TASK_ID + " " + Constants.DATATYPE_INT  + " PRIMARY KEY autoincrement" + Constants.COMMA_SEP +
+                Task.COLUMN_DESC + " " + Constants.DATATYPE_STRING + " NOT NULL " + Constants.COMMA_SEP +
+                Task.COLUMN_TASK_DATE + " " + Constants.DATATYPE_DATETIME + Constants.COMMA_SEP +
+                Task.COLUMN_MOT + " " + Constants.DATATYPE_STRING + Constants.COMMA_SEP +
+                Task.COLUMN_LAT + " " + Constants.DATATYPE_DOUBLE + "NOT NULL" + Constants.COMMA_SEP +
+                Task.COLUMN_LONG + " " + Constants.DATATYPE_DOUBLE + "NOT NULL" + Constants.COMMA_SEP +
+                Task.COLUMN_TASK_STATUS + " " + Constants.DATATYPE_STRING + Constants.COMMA_SEP +
+                Task.COLUMN_CREATED_DATE + " " + Constants.DATATYPE_DATETIME + " ) ";
+
+        try{
+            db.beginTransaction();
+            try {
+                db.execSQL(CREATE_TABLE_QUERY);
+                db.setTransactionSuccessful();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Table Previous Tasks created successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (SQLiteException e) {
+                e.printStackTrace();
+                Toast.makeText(dbContext , e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void insertIntoPreviousTask(Task t) {
+        String INSERT_TABLE_QUERY = "INSERT INTO " + Constants.TABLE_PREVIOUS_TASK + " ( " + Task.COLUMN_DESC + Constants.COMMA_SEP +
+                Task.COLUMN_TASK_DATE + Constants.COMMA_SEP + Task.COLUMN_MOT + Constants.COMMA_SEP + Task.COLUMN_LAT +
+                Constants.COMMA_SEP + Task.COLUMN_LONG + Constants.COMMA_SEP + Task.COLUMN_TASK_STATUS + Constants.COMMA_SEP +
+                Task.COLUMN_CREATED_DATE + " ) VALUES (" +
+                Constants.QUOTE +  t.getDesc() + Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getTaskDate() +
+                Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getMot() + Constants.QUOTE + Constants.COMMA_SEP +
+                t.getLat() + Constants.COMMA_SEP + t.getLng() + Constants.COMMA_SEP + Constants.QUOTE + t.getStatus() +
+                Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getCreatedDate() + Constants.QUOTE + ")";
+        try{
+            db.beginTransaction();
+            try {
+                db.execSQL(INSERT_TABLE_QUERY);
+                db.setTransactionSuccessful();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Previous Task added successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (SQLiteException e) {
+                e.printStackTrace();
+                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static ArrayList<String> getAllPreviousTasks(){
+        ArrayList<String> previousTaskList = new ArrayList<>();
+        String query = "select *" + " " + "from" + " "+ Constants.TABLE_PREVIOUS_TASK;
+        Cursor c;
+        db.beginTransaction();
+        c= db.rawQuery(query,null);
+        if (c.moveToFirst()){
+            do{
+                String temp = c.getString(c.getColumnIndex("Description"));
+                previousTaskList.add(temp);
+                // do what ever you want here
+            }while(c.moveToNext());
+        }
+        db.endTransaction();
+        return previousTaskList;
+    }
+
+    public static ArrayList<Task> getPreviousTasks() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        String SEARCH_TABLE_QUERY = "SELECT * FROM " + Constants.TABLE_PREVIOUS_TASK;
+        Task t = new Task();
+        try {
+            Cursor c = db.rawQuery(SEARCH_TABLE_QUERY, null);
+            if (c.moveToFirst()) {
+                do {
+                    String actualFormat = "EEE MMM dd HH:mm:ss Z yyyy";
+                    Date storedDate;
+                    t.setDesc(c.getString(c.getColumnIndex(Task.COLUMN_DESC)));
+                    t.setLat(c.getDouble(c.getColumnIndex(Task.COLUMN_LAT)));
+                    t.setLng(c.getDouble(c.getColumnIndex(Task.COLUMN_LONG)));
+                    t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
+                    String createdDate = c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE));
+                    if (!TextUtils.isEmpty(createdDate) && !createdDate.equals("null")) {
+                        storedDate = new SimpleDateFormat(actualFormat).parse(createdDate);
+                        t.setCreatedDate(storedDate);
+                    }
+                    t.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
+                    String taskDate = c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE));
+                    if (!TextUtils.isEmpty(taskDate) && !taskDate.equals("null")) {
+                        storedDate = new SimpleDateFormat(actualFormat).parse(taskDate);
+                        t.setTaskDate(storedDate);
+                    }
+                    tasks.add(t);
+                } while (c.moveToNext());
+                c.close();
+            }
+        }catch(SQLException e) {
+                e.printStackTrace();
+                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+            return tasks;
+        }
+
+
 }

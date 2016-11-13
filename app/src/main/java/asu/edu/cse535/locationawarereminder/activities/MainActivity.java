@@ -156,6 +156,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, MyLocations.class);
             startActivity(intent);
         }
+        else if (id == R.id.action_history){
+            Intent intent = new Intent(MainActivity.this, History.class);
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }
