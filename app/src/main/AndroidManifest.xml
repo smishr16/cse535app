@@ -34,12 +34,6 @@
         </activity>
 
         <activity
-            android:name=".activities.History"
-            android:label="@string/label_history"
-            android:parentActivityName=".activities.History" >
-        </activity>
-
-        <activity
             android:name=".activities.Settings"
             android:label="@string/action_settings"
             android:parentActivityName=".activities.MainActivity" >
@@ -54,6 +48,12 @@
         <activity
             android:name=".activities.MyLocations"
             android:label="@string/action_my_locations"
+            android:parentActivityName=".activities.MainActivity" >
+        </activity>
+
+        <activity
+            android:name=".activities.History"
+            android:label="@string/label_history"
             android:parentActivityName=".activities.MainActivity" >
         </activity>
 
