@@ -1,85 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--xmlns:tools="http://schemas.android.com/tools"-->
-<!--android:layout_width="match_parent"-->
-<!--android:layout_height="match_parent"-->
-<!--android:padding="5dp"-->
-<!--tools:context="asu.edu.cse535.locationawarereminder.activities.MainActivity" >-->
-
-
-
-<!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--android:id="@+id/rowTextView"-->
-<!--android:layout_width="fill_parent"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:padding="10dp"-->
-<!--android:textSize="16sp" >-->
-<!--</TextView>-->
-<!--<Button-->
-<!--android:id="@+id/button1"-->
-<!--android:layout_width="80dp"-->
-<!--android:layout_height="40dp"-->
-<!--android:layout_alignParentRight="true"-->
-<!--android:layout_alignParentTop="true"-->
-<!--android:background="#FFFFFF"-->
-<!--android:focusable="false"-->
-<!--android:focusableInTouchMode="false"-->
-<!--android:text="Edit Data"-->
-<!--android:textColor="#0099CC" />-->
-
-<!--<Button-->
-<!--android:id="@+id/button2"-->
-<!--android:layout_width="80dp"-->
-<!--android:layout_height="40dp"-->
-<!--android:layout_alignParentRight="true"-->
-<!--android:layout_below="@+id/button1"-->
-<!--android:layout_marginTop="3dp"-->
-<!--android:background="#FFFFFF"-->
-<!--android:focusable="false"-->
-<!--android:focusableInTouchMode="false"-->
-<!--android:text="Delete"-->
-<!--android:textColor="#0099CC" />-->
-
-<!--</RelativeLayout>-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="5dp"
+    android:layout_height="wrap_content"
+    android:padding="2dp"
     tools:context="asu.edu.cse535.locationawarereminder.activities.MainActivity" >
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/rowTextView"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:textSize="16sp" >
+        android:textSize="16sp"
+        android:gravity="left|center_horizontal"
+        android:layout_toLeftOf="@+id/button_delete_task">
     </TextView>
 
-
     <Button
-        android:id="@+id/button1"
-        android:layout_width="80dp"
-        android:layout_height="40dp"
+        android:id="@+id/button_mark_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:background="#FFFFFF"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:text="Mark Done"
-        android:textColor="#0099CC" />
+        android:text="@string/button_mark_done"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/green"
+        android:textStyle="bold"
+        />
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="80dp"
-        android:layout_height="40dp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/button1"
-        android:layout_marginTop="3dp"
-        android:background="#FFFFFF"
+        android:id="@+id/button_delete_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/button_mark_done"
+        android:backgroundTint="@color/red"
+        android:layout_marginRight="3dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:text="Delete"
-        android:textColor="#0099CC" />
-
+        android:text="@string/button_delete"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        />
 
 </RelativeLayout>

@@ -27,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.view.LayoutInflater;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
                 holder.textName = (TextView) row.findViewById(R.id.rowTextView);
                 //holder.textAddress = (TextView) row.findViewById(R.id.textView2);
                 //holder.textLocation = (TextView) row.findViewById(R.id.textView3);
-                holder.Mark_done = (Button) row.findViewById(R.id.button1);
-                holder.btnDelete = (Button) row.findViewById(R.id.button2);
+                holder.Mark_done = (Button) row.findViewById(R.id.button_mark_done);
+                holder.btnDelete = (Button) row.findViewById(R.id.button_delete_task);
                 row.setTag(holder);
             } else {
                 holder = (asu.edu.cse535.locationawarereminder.activities.UserCustomAdapter.UserHolder) row.getTag();
@@ -343,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
                 String task_type = data.getStringExtra("task_type");
                 Log.v("task_typ1", task_type);
                 if (task_type.equals("new_task")) {
-                    Toast.makeText(MainActivity.this, "task added", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "task added", Toast.LENGTH_SHORT).show();
                     new_task_added = 1;
                     Log.v("loading tasks from db", "load");
                     load_tasks_from_db();

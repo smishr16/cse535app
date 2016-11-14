@@ -12,7 +12,6 @@ package asu.edu.cse535.locationawarereminder.activities;
 
         import android.app.Activity;
         import android.content.Context;
-        import android.support.v7.app.AppCompatActivity;
         import android.util.Log;
         import android.view.LayoutInflater;
         import android.view.View;
@@ -27,37 +26,9 @@ package asu.edu.cse535.locationawarereminder.activities;
         import asu.edu.cse535.locationawarereminder.database.DBManager;
 
 
-        import android.app.Activity;
-        import android.content.Context;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.ArrayAdapter;
-        import android.widget.Button;
-        import android.widget.TextView;
-        import android.widget.Toast;
-
-        import java.util.ArrayList;
-
-
-
 /**
  * Created by CHE on 11/12/2016.
  */
-
-        import java.util.ArrayList;
-        import android.app.Activity;
-        import android.content.Context;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.View.OnClickListener;
-        import android.view.ViewGroup;
-        import android.widget.ArrayAdapter;
-        import android.widget.Button;
-        import android.widget.TextView;
-        import android.widget.Toast;
 
 public class UserCustomAdapter extends ArrayAdapter<String>  {
     String t_name;
@@ -85,8 +56,8 @@ public class UserCustomAdapter extends ArrayAdapter<String>  {
             holder.textName = (TextView) row.findViewById(R.id.rowTextView);
             //holder.textAddress = (TextView) row.findViewById(R.id.textView2);
             //holder.textLocation = (TextView) row.findViewById(R.id.textView3);
-            holder.Mark_done = (Button) row.findViewById(R.id.button1);
-            holder.btnDelete = (Button) row.findViewById(R.id.button2);
+            holder.Mark_done = (Button) row.findViewById(R.id.button_mark_done);
+            holder.btnDelete = (Button) row.findViewById(R.id.button_delete_task);
             row.setTag(holder);
         } else {
             holder = (UserHolder) row.getTag();

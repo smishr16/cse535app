@@ -1,13 +1,12 @@
 package asu.edu.cse535.locationawarereminder.activities;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -32,11 +31,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import android.location.Address;
-import android.location.Geocoder;
+import java.util.List;
 import java.util.Locale;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.Constants;
@@ -95,7 +91,6 @@ public class NewTaskActivity extends AppCompatActivity {
             task_name = extras.getString("task_name");
             Constants.DATATYPE_STRING = task_name;
             DBManager.fetch_data(task_name);
-            Log.v("getdesc", DBManager.task_details.getDesc());
             buttonSave = (Button) findViewById(R.id.button_save);
             buttonGetDirections = (Button) findViewById(R.id.button_get_directions);
             buttonMarkDone = (Button) findViewById(R.id.button_mark_done);
