@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -241,8 +242,9 @@ public class LocationListenerService extends Service {
         unregisterReceiver(deliveryBroadcastReceiver);
     }
 
-    private void sendEmail(String recipient, String textMessage){
+    public void sendEmail(String recipient, String textMessage) {
         String subject = "Alert from LAR App";
+        /*
         java.util.Properties properties = new java.util.Properties();
         properties.put("mail.smtp.host", "smtp.gmail.com");
         properties.put("mail.smtp.socketFactory.port", "465");
@@ -250,25 +252,50 @@ public class LocationListenerService extends Service {
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.port", "465");
 
-        Session session = Session.getDefaultInstance(properties,  new Authenticator() {
+        Session session = Session.getDefaultInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication("notificationcse535app@gmail.com", "cse535app");
             }
         });
-        try{
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("notificationcse535app@gmail.com"));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
-            message.setSubject(subject);
-            message.setContent(textMessage, "text/html; charset=utf-8");
-            Transport.send(message);
-            Log.v(TAG, "Email Delivered");
-        } catch(MessagingException e) {
-            e.printStackTrace();
-            Log.v(TAG, "Email Not Delivered");
-        } catch(Exception e) {
-            e.printStackTrace();
-            Log.v(TAG, "Email Not Delivered");
+        */
+        RetreiveFeedTask task = new RetreiveFeedTask();
+        task.execute(subject, recipient, textMessage);
+    }
+    class RetreiveFeedTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String subject = params[0];
+            String recipient = params[1];
+            String textMessage = params[2];
+            java.util.Properties properties = new java.util.Properties();
+            properties.put("mail.smtp.host", "smtp.gmail.com");
+            properties.put("mail.smtp.socketFactory.port", "465");
+            properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.put("mail.smtp.auth", "true");
+            properties.put("mail.smtp.port", "465");
+            Session session = Session.getDefaultInstance(properties, new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication("notificationcse535app@gmail.com", "cse535app");
+                }
+            });
+
+            try{
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress("notificationcse535app@gmail.com"));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
+                message.setSubject(subject);
+                message.setContent(textMessage, "text/html; charset=utf-8");
+                Transport.send(message);
+                Log.v(TAG, "Email Delivered");
+            } catch(MessagingException e) {
+                e.printStackTrace();
+                Log.v(TAG, "Email Not Delivered");
+            } catch(Exception e) {
+                e.printStackTrace();
+                Log.v(TAG, "Email Not Delivered");
+            }
+            return null;
         }
     }
 }

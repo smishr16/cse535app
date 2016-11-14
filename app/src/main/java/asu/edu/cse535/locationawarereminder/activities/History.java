@@ -49,8 +49,11 @@ public class History extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(History.this, NewTaskActivity.class);
-                intent.putExtra("TaskId", historyList.get(position));
-                //intent.putExtra("LocationName", locDesc);
+                intent.putExtra("Task Description", taskList.get(position).getDesc()); // string
+                intent.putExtra("Lat", taskList.get(position).getLat()); //double
+                intent.putExtra("Long", taskList.get(position).getLng()); // double
+                intent.putExtra("Date", taskList.get(position).getTaskDate()); //DateTime
+                intent.putExtra("Mot", taskList.get(position).getMot()); // string
                 intent.putExtra("Mode", "Completed Reminder");
                 startActivity(intent);
             }
@@ -59,8 +62,6 @@ public class History extends AppCompatActivity {
 
     public void displayHistory() {
         final ListView lv = (ListView) findViewById(R.id.listView_history);
-
-
         historyList= DBManager.getAllPreviousTasks();
         if(historyList.size()>0){
             // Create a List from String Array elements
