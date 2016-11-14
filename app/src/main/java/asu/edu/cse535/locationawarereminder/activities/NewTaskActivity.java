@@ -39,6 +39,7 @@ import asu.edu.cse535.locationawarereminder.database.Constants;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
 import asu.edu.cse535.locationawarereminder.database.Task;
 import asu.edu.cse535.locationawarereminder.services.LocationListenerService;
+import android.net.Uri;
 
 //import android.support.v4.app.DialogFragment; Using DialogFragment below for Date/Time Picker
 
@@ -66,6 +67,8 @@ public class NewTaskActivity extends AppCompatActivity {
     List<Address> addresses;
     int selected_location =0;
     String formattedDate;
+    String mode_of_trnspt;
+    String locText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,19 +146,27 @@ public class NewTaskActivity extends AppCompatActivity {
                 radioDrive = (RadioButton) findViewById(R.id.radiobutton_mot_driving);
 
                 TextView locationText = (TextView) findViewById(R.id.textView_location);
-                String locText = address + "," + city + "," + state;
+                 locText = address + "," + city + "," + state;
+                Log.v("LocText",locText);
                 locationText.setText(locText);
                 String Mot = DBManager.task_details.getMot();
                 Log.v("Mot", Mot);
-                if (Mot.contains("Walker")) {
+                if (Mot.contains("Walking")) {
                     radioWalk.setChecked(true);
+                    mode_of_trnspt = "Walking";
                 }
-                if (Mot.contains("Cycling")) {
+                else if (Mot.contains("Cycling")) {
                     radioCycle.setChecked(true);
+                    mode_of_trnspt = "Cycling";
+                }
+                else if (Mot.contains("Driving")) {
+                    radioDrive.setChecked(true);
+                    mode_of_trnspt = "Driving";
                 }
 
-                if (Mot.contains("Driving")) {
-                    radioDrive.setChecked(true);
+                else  {
+                    //radioDrive.setChecked(true);
+                    mode_of_trnspt = "Driving";
                 }
                 buttonSave = (Button) findViewById(R.id.button_save);
                 buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -330,10 +341,30 @@ public class NewTaskActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(NewTaskActivity.this, MapsActivity.class);
-                //intent.putExtra("Mode", R.string.edit_task);
-                //intent.putExtra("task_name", ((TextView) view).getText());
-                startActivity(intent);
+                String loc_uri= "google.navigation:q=";
+                String url = null;
+                if(mode_of_trnspt != null){
+                    if(mode_of_trnspt.equals("Walking"))
+                        url = loc_uri + locText + "&mode=w";
+                    if(mode_of_trnspt.equals("Cycling"))
+                        url = loc_uri + locText + "&mode=b";
+                    if(mode_of_trnspt.equals("Driving"))
+                        url = loc_uri + locText + "&mode=d";
+                }
+                else {
+                    url = loc_uri + locText + "&mode=d";
+                }
+                     Log.v("url",url);
+//                Intent intent = new Intent(NewTaskActivity.this, MapsActivity.class);
+//                //intent.putExtra("Mode", R.string.edit_task);
+//                //intent.putExtra("task_name", ((TextView) view).getText());
+//                startActivity(intent);
+
+
+                Uri gmmIntentUri = Uri.parse(url);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
             }
         });
 
@@ -386,7 +417,7 @@ public class NewTaskActivity extends AppCompatActivity {
                 t.setLat(lat_long.latitude);
                 t.setLng(lat_long.longitude);
                 TextView locationText = (TextView)findViewById(R.id.textView_location);
-                String locText = place.getName() + " " + place.getAddress();
+                 locText = place.getName() + " " + place.getAddress();
                 locationText.setText(locText);
             }
         }

@@ -32,13 +32,6 @@
             android:label="@string/label_reminder"
             android:parentActivityName=".activities.MainActivity" >
         </activity>
-        <activity android:name="asu.edu.cse535.locationawarereminder.activities.MapsActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <activity
             android:name=".activities.Settings"
