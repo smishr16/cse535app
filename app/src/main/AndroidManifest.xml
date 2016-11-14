@@ -32,6 +32,13 @@
             android:label="@string/label_reminder"
             android:parentActivityName=".activities.MainActivity" >
         </activity>
+        <activity android:name="asu.edu.cse535.locationawarereminder.activities.MapsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".activities.Settings"
@@ -78,7 +85,7 @@
             android:value="@integer/google_play_services_version"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyB0isG25gFxoab6ZeZqWEICS255BvZSsMc"/>
+            android:value="AIzaSyB5DS2qPSMbhFBw3Pjfo1O2SqSA9-bFro8"/>
     </application>
 
 </manifest>
