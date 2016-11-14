@@ -1,7 +1,9 @@
 package asu.edu.cse535.locationawarereminder.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -13,8 +15,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import android.content.ContentValues;
-import android.database.DatabaseUtils;
 
 /**
  * Created by Sooraj on 10/20/2016.
@@ -518,7 +518,7 @@ public class DBManager {
     public static ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
         String SEARCH_TABLE_QUERY = "SELECT * FROM " + Constants.TABLE_TASK + " WHERE " +
-                Task.COLUMN_TASK_STATUS + " = " + "COMPLETED";
+                Task.COLUMN_TASK_STATUS + " = " + Constants.QUOTE + "COMPLETED" + Constants.QUOTE;
         Task t = new Task();
         try {
             Cursor c = db.rawQuery(SEARCH_TABLE_QUERY, null);
