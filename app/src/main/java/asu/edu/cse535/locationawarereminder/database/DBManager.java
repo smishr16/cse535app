@@ -171,7 +171,7 @@ public class DBManager {
 
     public static ArrayList<String> get_all_tasks(){
         ArrayList<String> task_list = new ArrayList<String>();
-        String query = "select *" + " " + "from" + " "+ Constants.TABLE_TASK ;
+        String query = "select *" + " " + "from" + " "+ Constants.TABLE_TASK + " where " + Task.COLUMN_TASK_STATUS + " = " + Constants.QUOTE + "Created" + Constants.QUOTE ;
         Cursor c;
         db.beginTransaction();
         c= db.rawQuery(query,null);
