@@ -397,36 +397,34 @@ public class NewTaskActivity extends AppCompatActivity {
         }
     }
 
-    private void hideShowControls(Context context){
+    private void hideShowControls(Context context) {
         //TO:DO Implement for other types of context
         // Read extras from Intent
         Bundle extras = getIntent().getExtras();
-        if(extras != null)
+        if (extras != null)
             mode = extras.getInt("Mode");
 
-        if(mode == R.string.new_task){
+        if (mode == R.string.new_task) {
             hideControlsForNewTask(context);
             setTitle(R.string.new_task);
-        }
-        else if(mode == R.string.add_task_from_fav) {
+        } else if (mode == R.string.add_task_from_fav) {
             hideControlsForFavLocTask();
             setTitle(R.string.new_task);
             t.setLat(getIntent().getDoubleExtra("Latitude", 0.0));
             t.setLng(getIntent().getDoubleExtra("Longitude", 0.0));
-        }
-        else if(mode == R.string.open_from_notif) {
+        } else if (mode == R.string.open_from_notif) {
             String formattedDate;
 
             int task_id = getIntent().getExtras().getInt("taskid");
             Task t = DBManager.getTaskByTaskId(task_id);
 
-            if(t.getDesc() != null)
+            if (t.getDesc() != null)
                 reminderDesc.setText(t.getDesc());
 
             TextView date = (TextView) findViewById(R.id.textView_date);
             TextView time = (TextView) findViewById(R.id.textView_time);
             /* Convert date to display format */
-            if(t.getTaskDate() != null) {
+            if (t.getTaskDate() != null) {
                 String displayFormat = "MM/dd/yyyy HH:mm:ss";
                 formattedDate = new SimpleDateFormat(displayFormat).format(t.getTaskDate());
                 String datePart = formattedDate.split(" ")[0];
@@ -434,25 +432,68 @@ public class NewTaskActivity extends AppCompatActivity {
                 String timepart = formattedDate.split(" ")[1];
                 int hour = Integer.parseInt(timepart.split(":")[0]);
                 String amPm = getAmPm(hour);
-                if(hour > 12)
+                if (hour > 12)
                     hour -= 12;
-                timepart = (hour<10 ? "0"+hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
+                timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
                 time.setText(timepart);
             }
 
             TextView location = (TextView) findViewById(R.id.textView_location);
-            if(t.getLng() != 0.0 && t.getLat() != 0.0)
+            if (t.getLng() != 0.0 && t.getLat() != 0.0)
                 location.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
 
-            if(t.getMot().equals("Walking"))
+            if (t.getMot().equals("Walking"))
                 radioWalk.setChecked(true);
-            else if(t.getMot().equals("Cycling"))
+            else if (t.getMot().equals("Cycling"))
                 radioCycle.setChecked(true);
-            else if(t.getMot().equals("Driving"))
+            else if (t.getMot().equals("Driving"))
                 radioDrive.setChecked(true);
 
             hideControlsForViewTask();
             setTitle(R.string.open_from_notif);
+        } else if (mode == R.string.completed_task) {
+            String formattedDate;
+
+            String taskDesc = getIntent().getExtras().getString("Task Description");
+
+            if (!taskDesc.equals(""))
+                reminderDesc.setText(taskDesc);
+
+            TextView date = (TextView) findViewById(R.id.textView_date);
+            TextView time = (TextView) findViewById(R.id.textView_time);
+            /* Convert date to display format */
+            //String convDate = getIntent().getExtras().getString("Date");
+            Date convDate = (Date)getIntent().getSerializableExtra("Date");
+            if (convDate != null) {
+                String displayFormat = "MM/dd/yyyy HH:mm:ss";
+                formattedDate = new SimpleDateFormat(displayFormat).format(convDate);
+                String datePart = formattedDate.split(" ")[0];
+                date.setText(datePart);
+                String timepart = formattedDate.split(" ")[1];
+                int hour = Integer.parseInt(timepart.split(":")[0]);
+                String amPm = getAmPm(hour);
+                if (hour > 12)
+                    hour -= 12;
+                timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
+                time.setText(timepart);
+            }
+
+            TextView location = (TextView) findViewById(R.id.textView_location);
+            Double lat = getIntent().getExtras().getDouble("Lat");
+            Double lng = getIntent().getExtras().getDouble("Long");
+            if (lng != 0.0  && lat != 0.0)
+                location.setText("Latitude : " + lat + " Longitude : " + lng);
+
+            String mot = getIntent().getExtras().getString("Mot");
+            if (mot.equals("Walking"))
+                radioWalk.setChecked(true);
+            else if (mot.equals("Cycling"))
+                radioCycle.setChecked(true);
+            else if (mot.equals("Driving"))
+                radioDrive.setChecked(true);
+
+            hideControlsForCompletedTask();
+            setTitle(R.string.completed_task);
         }
     }
 
@@ -488,6 +529,21 @@ public class NewTaskActivity extends AppCompatActivity {
         buttonPickLocation.setEnabled(false);
         TextView textView_location = (TextView) findViewById(R.id.textView_location);
         textView_location.setText(getIntent().getStringExtra("LocationName"));
+    }
+
+    private void hideControlsForCompletedTask() {
+        buttonMarkDone.setVisibility(View.GONE);
+        buttonGetDirections.setVisibility(View.GONE);
+        buttonSave.setVisibility(View.GONE);
+        buttonAddReminder.setVisibility(View.GONE);
+        reminderDesc.setEnabled(false);
+        buttonPickDate.setEnabled(false);
+        buttonPickTime.setEnabled(false);
+        buttonPickLocation.setEnabled(false);
+        radioGroupMot.setEnabled(false);
+        radioDrive.setEnabled(false);
+        radioCycle.setEnabled(false);
+        radioWalk.setEnabled(false);
     }
 
     @Override

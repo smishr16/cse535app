@@ -1,18 +1,14 @@
 package asu.edu.cse535.locationawarereminder.activities;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -48,13 +44,14 @@ public class History extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView historyDesc = (TextView) view.findViewById(R.id.history_name);
                 Intent intent = new Intent(History.this, NewTaskActivity.class);
-                intent.putExtra("Task Description", taskList.get(position).getDesc()); // string
-                intent.putExtra("Lat", taskList.get(position).getLat()); //double
-                intent.putExtra("Long", taskList.get(position).getLng()); // double
-                intent.putExtra("Date", taskList.get(position).getTaskDate()); //DateTime
-                intent.putExtra("Mot", taskList.get(position).getMot()); // string
-                intent.putExtra("Mode", "Completed Reminder");
+                intent.putExtra("Task Description", taskList.get(position).getDesc());
+                intent.putExtra("Lat", taskList.get(position).getLat());
+                intent.putExtra("Long", taskList.get(position).getLng());
+                intent.putExtra("Date", taskList.get(position).getTaskDate());
+                intent.putExtra("Mot", taskList.get(position).getMot());
+                intent.putExtra("Mode", R.string.completed_task);
                 startActivity(intent);
             }
         });
@@ -62,10 +59,10 @@ public class History extends AppCompatActivity {
 
     public void displayHistory() {
         final ListView lv = (ListView) findViewById(R.id.listView_history);
-        historyList= DBManager.getAllPreviousTasks();
+        historyList= DBManager.getCompletedTaskNames();
         if(historyList.size()>0){
             // Create a List from String Array elements
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this, R.layout.simplerow, historyList);
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<> (this, R.layout.history_item, R.id.history_name, historyList);
             lv.setAdapter(arrayAdapter);
         }
     }

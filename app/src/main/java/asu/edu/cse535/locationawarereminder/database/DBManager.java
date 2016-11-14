@@ -497,88 +497,28 @@ public class DBManager {
         }
     }
 
-    private static void createPreviousTaskTable(){
-        String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PREVIOUS_TASK + " ( " +
-                Task.COLUMN_TASK_ID + " " + Constants.DATATYPE_INT  + " PRIMARY KEY autoincrement" + Constants.COMMA_SEP +
-                Task.COLUMN_DESC + " " + Constants.DATATYPE_STRING + " NOT NULL " + Constants.COMMA_SEP +
-                Task.COLUMN_TASK_DATE + " " + Constants.DATATYPE_DATETIME + Constants.COMMA_SEP +
-                Task.COLUMN_MOT + " " + Constants.DATATYPE_STRING + Constants.COMMA_SEP +
-                Task.COLUMN_LAT + " " + Constants.DATATYPE_DOUBLE + "NOT NULL" + Constants.COMMA_SEP +
-                Task.COLUMN_LONG + " " + Constants.DATATYPE_DOUBLE + "NOT NULL" + Constants.COMMA_SEP +
-                Task.COLUMN_TASK_STATUS + " " + Constants.DATATYPE_STRING + Constants.COMMA_SEP +
-                Task.COLUMN_CREATED_DATE + " " + Constants.DATATYPE_DATETIME + " ) ";
-
-        try{
-            db.beginTransaction();
-            try {
-                db.execSQL(CREATE_TABLE_QUERY);
-                db.setTransactionSuccessful();
-                if(DEBUG)
-                    Toast.makeText(dbContext, "Table Previous Tasks created successfully", Toast.LENGTH_SHORT).show();
-            }
-            catch (SQLiteException e) {
-                e.printStackTrace();
-                Toast.makeText(dbContext , e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-            finally {
-                db.endTransaction();
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public static void insertIntoPreviousTask(Task t) {
-        String INSERT_TABLE_QUERY = "INSERT INTO " + Constants.TABLE_PREVIOUS_TASK + " ( " + Task.COLUMN_DESC + Constants.COMMA_SEP +
-                Task.COLUMN_TASK_DATE + Constants.COMMA_SEP + Task.COLUMN_MOT + Constants.COMMA_SEP + Task.COLUMN_LAT +
-                Constants.COMMA_SEP + Task.COLUMN_LONG + Constants.COMMA_SEP + Task.COLUMN_TASK_STATUS + Constants.COMMA_SEP +
-                Task.COLUMN_CREATED_DATE + " ) VALUES (" +
-                Constants.QUOTE +  t.getDesc() + Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getTaskDate() +
-                Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getMot() + Constants.QUOTE + Constants.COMMA_SEP +
-                t.getLat() + Constants.COMMA_SEP + t.getLng() + Constants.COMMA_SEP + Constants.QUOTE + t.getStatus() +
-                Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getCreatedDate() + Constants.QUOTE + ")";
-        try{
-            db.beginTransaction();
-            try {
-                db.execSQL(INSERT_TABLE_QUERY);
-                db.setTransactionSuccessful();
-                if(DEBUG)
-                    Toast.makeText(dbContext, "Previous Task added successfully", Toast.LENGTH_SHORT).show();
-            }
-            catch (SQLiteException e) {
-                e.printStackTrace();
-                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-            finally {
-                db.endTransaction();
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public static ArrayList<String> getAllPreviousTasks(){
-        ArrayList<String> previousTaskList = new ArrayList<>();
-        String query = "select *" + " " + "from" + " "+ Constants.TABLE_PREVIOUS_TASK;
+    public static ArrayList<String> getCompletedTaskNames(){
+        ArrayList<String> taskNames = new ArrayList<>();
+        String query = "SELECT * FROM " + Constants.TABLE_TASK + " WHERE " +
+                Task.COLUMN_TASK_STATUS + " = " + "COMPLETED";
         Cursor c;
         db.beginTransaction();
         c= db.rawQuery(query,null);
         if (c.moveToFirst()){
             do{
                 String temp = c.getString(c.getColumnIndex("Description"));
-                previousTaskList.add(temp);
+                taskNames.add(temp);
                 // do what ever you want here
             }while(c.moveToNext());
         }
         db.endTransaction();
-        return previousTaskList;
+        return task_list;
     }
 
-    public static ArrayList<Task> getPreviousTasks() {
+    public static ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
-        String SEARCH_TABLE_QUERY = "SELECT * FROM " + Constants.TABLE_PREVIOUS_TASK;
+        String SEARCH_TABLE_QUERY = "SELECT * FROM " + Constants.TABLE_TASK + " WHERE " +
+                Task.COLUMN_TASK_STATUS + " = " + "COMPLETED";
         Task t = new Task();
         try {
             Cursor c = db.rawQuery(SEARCH_TABLE_QUERY, null);
