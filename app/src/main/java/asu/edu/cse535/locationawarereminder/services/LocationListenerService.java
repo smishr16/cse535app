@@ -121,8 +121,8 @@ public class LocationListenerService extends Service {
                     builder.setSubText("Description : " + desc);   //API level 16
                     notificationManager.notify(task_id, builder.build());
 
-                    String message = "You have open reminders for this location" + "/n" +
-                            "Description: " + desc + "/n";
+                    String message = "You have open reminders for this location" + System.getProperty("line.separator") +
+                            "Description: " + desc + System.getProperty("line.separator");
 
                     //Check if phone number is there and if so send SMS
                     phoneNumber = getPhoneNumber();
@@ -242,22 +242,8 @@ public class LocationListenerService extends Service {
         unregisterReceiver(deliveryBroadcastReceiver);
     }
 
-    public void sendEmail(String recipient, String textMessage) {
+    private void sendEmail(String recipient, String textMessage) {
         String subject = "Alert from LAR App";
-        /*
-        java.util.Properties properties = new java.util.Properties();
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.socketFactory.port", "465");
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.port", "465");
-
-        Session session = Session.getDefaultInstance(properties, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("notificationcse535app@gmail.com", "cse535app");
-            }
-        });
-        */
         RetreiveFeedTask task = new RetreiveFeedTask();
         task.execute(subject, recipient, textMessage);
     }
