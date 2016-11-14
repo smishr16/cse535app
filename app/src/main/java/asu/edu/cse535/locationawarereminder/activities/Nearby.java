@@ -86,10 +86,6 @@ public class Nearby extends AppCompatActivity {
         NearbyCustomList adapter = new NearbyCustomList(this, placesList, placeIconList);
         ListView listView = (ListView) findViewById(R.id.listView_nearby_places);
         listView.setAdapter(adapter);
-
-        /*ListView listView = (ListView) findViewById(R.id.listView_nearby_places);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.nearby_place_item, R.id.item_name, placesList);
-        listView.setAdapter(adapter);*/
     }
 
     // AsyncTask to get nearby palces

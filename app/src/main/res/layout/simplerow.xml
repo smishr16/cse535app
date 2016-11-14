@@ -12,11 +12,12 @@
         android:padding="10dp"
         android:textSize="16sp"
         android:gravity="left|center_horizontal"
-        android:layout_toLeftOf="@+id/button_delete_task">
+        android:layout_toLeftOf="@+id/button_delete_task_main"
+        android:textStyle="bold">
     </TextView>
 
     <Button
-        android:id="@+id/button_mark_done"
+        android:id="@+id/button_mark_done_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -30,10 +31,10 @@
         />
 
     <Button
-        android:id="@+id/button_delete_task"
+        android:id="@+id/button_delete_task_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/button_mark_done"
+        android:layout_toLeftOf="@+id/button_mark_done_main"
         android:backgroundTint="@color/red"
         android:layout_marginRight="3dp"
         android:focusable="false"

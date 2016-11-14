@@ -71,6 +71,10 @@ public class Task {
         return createdDate;
     }
 
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
+
     public void setDesc(String desc) {
         this.desc = desc;
     }

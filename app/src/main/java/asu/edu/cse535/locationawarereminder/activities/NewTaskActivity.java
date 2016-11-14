@@ -1,4 +1,5 @@
 package asu.edu.cse535.locationawarereminder.activities;
+
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -7,9 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -35,38 +36,27 @@ import java.util.List;
 import java.util.Locale;
 
 import asu.edu.cse535.locationawarereminder.R;
-import asu.edu.cse535.locationawarereminder.database.Constants;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
 import asu.edu.cse535.locationawarereminder.database.Task;
 import asu.edu.cse535.locationawarereminder.services.LocationListenerService;
-import android.net.Uri;
-
-//import android.support.v4.app.DialogFragment; Using DialogFragment below for Date/Time Picker
-
 
 /**
  * Created by Sooraj on 10/21/2016.
  */
 public class NewTaskActivity extends AppCompatActivity {
 
-    Task task = new Task();
-    Context con;
-    String task_name;
-    int new_or_edit;
+    Geocoder geocoder;
+    List<Address> addresses;
     static boolean DEBUG = false;
     static final int PLACE_PICKER_REQUEST = 1;
     int mode;
+    final Task t = new Task();
     static Button buttonSave, buttonGetDirections, buttonMarkDone, buttonPickLocation, buttonAddReminder, buttonPickDate, buttonPickTime;
     static RadioGroup radioGroupMot;
     static RadioButton radioWalk, radioCycle, radioDrive;
     static EditText reminderDesc;
     DialogFragment dialogFragmentDate, dialogFragmentTime;
-    static Task t;
     static int hourOfDaySelected, minuteSelected;
-    Geocoder geocoder;
-    List<Address> addresses;
-    int selected_location =0;
-    String formattedDate;
     String mode_of_trnspt;
     String locText;
 
@@ -74,169 +64,6 @@ public class NewTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_task_activity);
-        con = getApplication().getBaseContext();
-
-        t = new Task();
-
-        // Display up button
-        if(getSupportActionBar() != null)
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            mode = extras.getInt("Mode");
-
-            //Log.v("mode is", Integer.toString(mode));
-        }
-
-        if (mode == R.string.edit_task) {
-            Log.v("inside edit task","inside edit task");
-            task_name = extras.getString("task_name");
-            Constants.DATATYPE_STRING = task_name;
-            DBManager.fetch_data(task_name);
-            buttonSave = (Button) findViewById(R.id.button_save);
-            buttonGetDirections = (Button) findViewById(R.id.button_get_directions);
-            buttonMarkDone = (Button) findViewById(R.id.button_mark_done);
-            buttonPickLocation = (Button) findViewById(R.id.button_picklocation);
-            buttonAddReminder = (Button) findViewById(R.id.button_add_reminder);
-            buttonPickDate = (Button) findViewById(R.id.button_pick_date);
-            buttonPickTime = (Button) findViewById(R.id.button_pick_time);
-
-            radioGroupMot = (RadioGroup) findViewById(R.id.radioGroupMot);
-            radioWalk = (RadioButton) findViewById(R.id.radiobutton_mot_walking);
-            radioCycle = (RadioButton) findViewById(R.id.radiobutton_mot_cycling);
-            radioDrive = (RadioButton) findViewById(R.id.radiobutton_mot_driving);
-
-            reminderDesc = (EditText) findViewById(R.id.editText_desc);
-            TextView date = (TextView) findViewById(R.id.textView_date);
-            TextView time = (TextView) findViewById(R.id.textView_time);
-            if (DBManager.task_details.getTaskDate() != null) {
-                String displayFormat = "MM/dd/yyyy HH:mm:ss";
-                formattedDate = new SimpleDateFormat(displayFormat).format(DBManager.task_details.getTaskDate());
-                String datePart = formattedDate.split(" ")[0];
-                date.setText(datePart);
-                String timepart = formattedDate.split(" ")[1];
-                int hour = Integer.parseInt(timepart.split(":")[0]);
-                String amPm = getAmPm(hour);
-                if (hour > 12)
-                    hour -= 12;
-                timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
-                time.setText(timepart);
-
-
-                EditText task_text = (EditText) findViewById(R.id.editText_desc);
-                task_text.setText(DBManager.task_details.getDesc());
-
-                geocoder = new Geocoder(this, Locale.getDefault());
-                try {
-                    addresses = geocoder.getFromLocation(DBManager.task_details.getLat(), DBManager.task_details.getLng(), 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                String address = addresses.get(0).getAddressLine(0);
-                String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                Log.v("address", address);
-                Log.v("city", city);
-
-
-                radioGroupMot = (RadioGroup) findViewById(R.id.radioGroupMot);
-                radioWalk = (RadioButton) findViewById(R.id.radiobutton_mot_walking);
-                radioCycle = (RadioButton) findViewById(R.id.radiobutton_mot_cycling);
-                radioDrive = (RadioButton) findViewById(R.id.radiobutton_mot_driving);
-
-                TextView locationText = (TextView) findViewById(R.id.textView_location);
-                 locText = address + "," + city + "," + state;
-                Log.v("LocText",locText);
-                locationText.setText(locText);
-                String Mot = DBManager.task_details.getMot();
-                Log.v("Mot", Mot);
-                if (Mot.contains("Walking")) {
-                    radioWalk.setChecked(true);
-                    mode_of_trnspt = "Walking";
-                }
-                else if (Mot.contains("Cycling")) {
-                    radioCycle.setChecked(true);
-                    mode_of_trnspt = "Cycling";
-                }
-                else if (Mot.contains("Driving")) {
-                    radioDrive.setChecked(true);
-                    mode_of_trnspt = "Driving";
-                }
-
-                else  {
-                    //radioDrive.setChecked(true);
-                    mode_of_trnspt = "Driving";
-                }
-                buttonSave = (Button) findViewById(R.id.button_save);
-                buttonSave.setOnClickListener(new View.OnClickListener() {
-                    private int year, month, dateField;
-
-                    @Override
-                    public void onClick(View v) {
-
-                        //Launch Location Picker
-                        try {
-                            Log.v("task_name_Deleting", DBManager.task_details.getDesc());
-                            DBManager.DeleteTask(DBManager.task_details.getDesc());
-                            boolean checked = checkMandatory();
-                            if (checked) {
-                                Log.v("inside checked", "inside checked");
-                                TextView date = (TextView) findViewById(R.id.textView_date);
-                                TextView time = (TextView) findViewById(R.id.textView_time);
-
-                                t.setDesc(reminderDesc.getText().toString());
-                                Log.v("edited_task_name", reminderDesc.getText().toString());
-                                Calendar c = Calendar.getInstance();
-                                if (!date.getText().toString().isEmpty() && !time.getText().toString().isEmpty()) {
-                                    formatDateInput(date.getText().toString());
-                                    month -= 1;
-                                    c.set(year, month, dateField, hourOfDaySelected, minuteSelected);
-                                    t.setTaskDate(c.getTime());
-                                }
-                                if (selected_location == 0) {
-                                    t.setLat(DBManager.task_details.getLat());
-                                    t.setLng(DBManager.task_details.getLng());
-                                }
-                                if (radioWalk.isSelected())
-                                    t.setMot("Walking");
-                                else if (radioCycle.isSelected())
-                                    t.setMot("Cycling");
-                                else if (radioDrive.isSelected())
-                                    t.setMot("Driving");
-                                else
-                                    t.setMot(DBManager.task_details.getMot());
-                                t.setStatus("Created");
-                                t.setCreatedDate(c.getTime());
-
-                                DBManager.insertIntoTask(t);
-                                Intent intent = new Intent();
-                                intent.putExtra("task_type", "edit_task");
-                                Log.v("sending to main", "sending to main");
-                                setResult(android.app.Activity.RESULT_OK, intent);
-                                Log.v("before finish", "before finish");
-                                finish();
-
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    private void formatDateInput(String dateVal) {
-                        month = Integer.parseInt(dateVal.split("/")[0]);
-                        dateField = Integer.parseInt(dateVal.split("/")[1]);
-                        year = Integer.parseInt(dateVal.split("/")[2]);
-                    }
-                });
-
-
-//            Log.v("desc name",task.getDesc());
-
-
-            }
-        }
 
         buttonSave = (Button)findViewById(R.id.button_save);
         buttonGetDirections = (Button)findViewById(R.id.button_get_directions);
@@ -252,6 +79,16 @@ public class NewTaskActivity extends AppCompatActivity {
         radioDrive = (RadioButton)findViewById(R.id.radiobutton_mot_driving);
 
         reminderDesc = (EditText)findViewById(R.id.editText_desc);
+
+        // Display up button
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Get Mode
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            mode = extras.getInt("Mode");
+        }
 
         // Method to hide or show controls according to context
         hideShowControls(getApplicationContext());
@@ -271,7 +108,7 @@ public class NewTaskActivity extends AppCompatActivity {
             }
         });
 
-        //Add onclick for Add Reminder button
+        // Add onclick for Add Reminder button
         buttonAddReminder.setOnClickListener(new View.OnClickListener(){
 
             private int year, month, dateField;
@@ -303,12 +140,6 @@ public class NewTaskActivity extends AppCompatActivity {
 
                     int taskId = DBManager.getLastInserted();
                     startLocationListener(taskId, t.getDesc(), t.getLat(), t.getLng());
-
-                    Intent intent = new Intent();
-                    intent.putExtra("task_type","new_task");
-                    Log.v("sending to main","sending to main");
-                    setResult(android.app.Activity.RESULT_OK,intent);
-                    Log.v("before finish","before finish");
 
                     finish();
                 }
@@ -354,13 +185,6 @@ public class NewTaskActivity extends AppCompatActivity {
                 else {
                     url = loc_uri + locText + "&mode=d";
                 }
-                     Log.v("url",url);
-//                Intent intent = new Intent(NewTaskActivity.this, MapsActivity.class);
-//                //intent.putExtra("Mode", R.string.edit_task);
-//                //intent.putExtra("task_name", ((TextView) view).getText());
-//                startActivity(intent);
-
-
                 Uri gmmIntentUri = Uri.parse(url);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
@@ -368,7 +192,17 @@ public class NewTaskActivity extends AppCompatActivity {
             }
         });
 
-        //Add onClick for Pick Date button
+        // Add click event for Mark as Done button
+        buttonMarkDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int task_id = getIntent().getExtras().getInt("task_id");
+                DBManager.updateTaskStatus(task_id, "Completed");
+                finish();
+            }
+        });
+
+        // Add onClick for Pick Date button
         buttonPickDate.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -390,7 +224,7 @@ public class NewTaskActivity extends AppCompatActivity {
         });
     }
 
-    /* Check andatory fields */
+    /* Check mandatory fields */
     private boolean checkMandatory(){
         //Check all mandatory values here
         if(reminderDesc.getText().toString().isEmpty()){
@@ -417,15 +251,13 @@ public class NewTaskActivity extends AppCompatActivity {
                 t.setLat(lat_long.latitude);
                 t.setLng(lat_long.longitude);
                 TextView locationText = (TextView)findViewById(R.id.textView_location);
-                 locText = place.getName() + " " + place.getAddress();
+                String locText = place.getName() + " " + place.getAddress();
                 locationText.setText(locText);
             }
         }
     }
 
     private void hideShowControls(Context context) {
-        //TO:DO Implement for other types of context
-        // Read extras from Intent
         Bundle extras = getIntent().getExtras();
         if (extras != null)
             mode = extras.getInt("Mode");
@@ -433,15 +265,117 @@ public class NewTaskActivity extends AppCompatActivity {
         if (mode == R.string.new_task) {
             hideControlsForNewTask(context);
             setTitle(R.string.new_task);
-        } else if (mode == R.string.add_task_from_fav) {
+        }
+        else if (mode == R.string.add_task_from_fav) {
             hideControlsForFavLocTask();
             setTitle(R.string.new_task);
             t.setLat(getIntent().getDoubleExtra("Latitude", 0.0));
             t.setLng(getIntent().getDoubleExtra("Longitude", 0.0));
-        } else if (mode == R.string.open_from_notif) {
+        }
+        else if (mode == R.string.edit_task) {
             String formattedDate;
 
-            int task_id = getIntent().getExtras().getInt("taskid");
+            int task_id = getIntent().getExtras().getInt("task_id");
+            final Task t = DBManager.getTaskByTaskId(task_id);
+
+            geocoder = new Geocoder(this, Locale.getDefault());
+            try {
+                addresses = geocoder.getFromLocation(t.getLat(), t.getLng(), 1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            String address = addresses.get(0).getAddressLine(0);
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            TextView locationText = (TextView) findViewById(R.id.textView_location);
+            locText = address + "," + city + "," + state;
+            locationText.setText(locText);
+
+            if (t.getDesc() != null)
+                reminderDesc.setText(t.getDesc());
+
+            TextView date = (TextView) findViewById(R.id.textView_date);
+            TextView time = (TextView) findViewById(R.id.textView_time);
+            /* Convert date to display format */
+            if (t.getTaskDate() != null) {
+                String displayFormat = "MM/dd/yyyy HH:mm:ss";
+                formattedDate = new SimpleDateFormat(displayFormat).format(t.getTaskDate());
+                String datePart = formattedDate.split(" ")[0];
+                date.setText(datePart);
+                String timepart = formattedDate.split(" ")[1];
+                int hour = Integer.parseInt(timepart.split(":")[0]);
+                String amPm = getAmPm(hour);
+                if (hour > 12)
+                    hour -= 12;
+                timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
+                time.setText(timepart);
+            }
+
+            TextView location = (TextView) findViewById(R.id.textView_location);
+            if (t.getLng() != 0.0 && t.getLat() != 0.0) {
+                location.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
+                this.t.setLat(t.getLat());
+                this.t.setLng(t.getLng());
+            }
+
+
+            if (t.getMot().equals("Walking"))
+                radioWalk.setChecked(true);
+            else if (t.getMot().equals("Cycling"))
+                radioCycle.setChecked(true);
+            else if (t.getMot().equals("Driving"))
+                radioDrive.setChecked(true);
+            mode_of_trnspt = t.getMot();
+
+            hideControlsForEditTask();
+            setTitle(R.string.edit_task);
+
+            buttonSave.setOnClickListener(new View.OnClickListener() {
+                private int year, month, dateField;
+
+                @Override
+                public void onClick(View v) {
+                    try {
+                        boolean checked = checkMandatory();
+                        if (checked) {
+                            TextView date = (TextView) findViewById(R.id.textView_date);
+                            TextView time = (TextView) findViewById(R.id.textView_time);
+
+                            t.setDesc(reminderDesc.getText().toString());
+                            Calendar c = Calendar.getInstance();
+                            if (!date.getText().toString().isEmpty() && !time.getText().toString().isEmpty()) {
+                                formatDateInput(date.getText().toString());
+                                month -= 1;
+                                c.set(year, month, dateField, hourOfDaySelected, minuteSelected);
+                                t.setTaskDate(c.getTime());
+                            }
+                            if (radioWalk.isSelected())
+                                t.setMot("Walking");
+                            else if (radioCycle.isSelected())
+                                t.setMot("Cycling");
+                            else if (radioDrive.isSelected())
+                                t.setMot("Driving");
+                            mode_of_trnspt = t.getMot();
+                            DBManager.updateTask(t);
+                            finish();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(NewTaskActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                private void formatDateInput(String dateVal) {
+                    month = Integer.parseInt(dateVal.split("/")[0]);
+                    dateField = Integer.parseInt(dateVal.split("/")[1]);
+                    year = Integer.parseInt(dateVal.split("/")[2]);
+                }
+            });
+        }
+        else if (mode == R.string.open_from_notif) {
+            String formattedDate;
+
+            int task_id = getIntent().getExtras().getInt("task_id");
             Task t = DBManager.getTaskByTaskId(task_id);
 
             if (t.getDesc() != null)
@@ -474,10 +408,12 @@ public class NewTaskActivity extends AppCompatActivity {
                 radioCycle.setChecked(true);
             else if (t.getMot().equals("Driving"))
                 radioDrive.setChecked(true);
+            mode_of_trnspt = t.getMot();
 
             hideControlsForViewTask();
             setTitle(R.string.open_from_notif);
-        } else if (mode == R.string.completed_task) {
+        }
+        else if (mode == R.string.completed_task) {
             String formattedDate;
 
             String taskDesc = getIntent().getExtras().getString("Task Description");
@@ -570,6 +506,11 @@ public class NewTaskActivity extends AppCompatActivity {
         radioDrive.setEnabled(false);
         radioCycle.setEnabled(false);
         radioWalk.setEnabled(false);
+    }
+
+    private void hideControlsForEditTask() {
+        buttonPickLocation.setEnabled(false);
+        buttonAddReminder.setVisibility(View.GONE);
     }
 
     @Override

@@ -17,6 +17,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.SmsManager;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -27,15 +30,12 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import java.util.ArrayList;
-
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.activities.NewTaskActivity;
 import asu.edu.cse535.locationawarereminder.database.Constants;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
 import asu.edu.cse535.locationawarereminder.database.Properties;
 import asu.edu.cse535.locationawarereminder.database.Task;
-import android.util.Log;
 
 
 
@@ -106,7 +106,7 @@ public class LocationListenerService extends Service {
                 if(!t.getStatus().equals("Completed") && !t.getStatus().equals("Removed")){
                     NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                     Intent openTaskIntent = new Intent(LocationListenerService.this, NewTaskActivity.class);
-                    openTaskIntent.putExtra("taskid", task_id);
+                    openTaskIntent.putExtra("task_id", task_id);
                     openTaskIntent.putExtra("Mode", R.string.open_from_notif);
                     openTaskIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     PendingIntent notificationIntent = PendingIntent.getActivity(context, task_id, openTaskIntent, PendingIntent.FLAG_UPDATE_CURRENT);

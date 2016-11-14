@@ -10,7 +10,6 @@ public class Constants {
     public static String TABLE_TASK = "TASK";
     public static String TABLE_PROPERTIES = "PROPERTIES";
     public static String TABLE_MY_LOCATIONS = "MY_LOCATIONS";
-    public static String TABLE_PREVIOUS_TASK = "PREVIOUS_TASKS";
 
     public static String DATATYPE_INT = "integer";
     public static String DATATYPE_STRING = "varchar(500)";
