@@ -13,15 +13,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import android.content.ContentValues;
+import android.database.DatabaseUtils;
 
 /**
  * Created by Sooraj on 10/20/2016.
  */
 public class DBManager {
+    public static Task task_details;
 
     private static SQLiteDatabase db;
     private static Context dbContext;
     private static boolean DEBUG = false;
+    public static ArrayList<String> task_list = new ArrayList<String>();
 
     public DBManager(Context context){
         dbContext = context;
@@ -70,6 +74,69 @@ public class DBManager {
             e.printStackTrace();
             Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static Task fetch_data(String task_name) {
+
+
+        Log.v("task_name_db", task_name);
+        //task_name= "'%" +task_name + "%'";
+        Task task_tuple = new Task();
+        //String query = "Select * from " + Constants.TABLE_TASK + " where " + Task.COLUMN_DESC + " = " + task_name ;
+        String query = "Select * from " + Constants.TABLE_TASK;
+        Log.v("query is", query);
+        Cursor c;
+
+        try {
+            db.beginTransaction();
+            c = db.rawQuery(query, null);
+            Log.v("task_name_passed", task_name);
+
+            if (c.moveToFirst()) {
+                do {
+                    String temp = c.getString(c.getColumnIndex("Description"));
+                    Log.v("temp", temp);
+
+                    //task_list.add(temp);
+                    task_details = new Task();
+                    if (temp.equals(task_name)) {
+                        Log.v("temp1", temp);
+                        String actualFormat = "EEE MMM dd HH:mm:ss Z yyyy";
+                        Date storedDate;
+                        storedDate = new SimpleDateFormat(actualFormat).parse(c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE)));
+                        task_details.setCreatedDate(storedDate);
+                        storedDate = new SimpleDateFormat(actualFormat).parse(c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE)));
+                        task_details.setTaskDate(storedDate);
+
+
+                        Log.v("status",c.getString(6));
+                        task_details.setDesc(c.getString(1));
+                        task_details.setMot(c.getString(3));
+                        task_details.setLat(c.getDouble(4));
+                        task_details.setLng(c.getDouble(5));
+                        task_details.setStatus(c.getString(6));
+                        Log.v("task_name_descrip", task_details.getDesc());
+                        //Log.v("task_name_date",task_details.getTaskDate());
+                        Log.v("task_name_lat", Double.toString(task_details.getLat()));
+
+                        return task_details;
+
+
+                    }
+
+
+                    // do what ever you want here
+                } while (c.moveToNext());
+                db.endTransaction();
+
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return task_tuple;
     }
 
     public static void insertIntoTask(Task t) {
@@ -539,15 +606,144 @@ public class DBManager {
                 c.close();
             }
         }catch(SQLException e) {
-                e.printStackTrace();
-                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-            } catch (ParseException e) {
-                e.printStackTrace();
-                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        return tasks;
+    }
+
+
+
+    public static void Update_task(String t_name) {
+
+        int count =1;
+        Log.v("enterd delete_task","entered");
+        String query = "Select * from " + Constants.TABLE_TASK;
+        String query1 = "Select * from " + Constants.TABLE_TASK;
+        Log.v("query is", query);
+        Cursor c,d;
+
+        try {
+            db.beginTransaction();
+            Long numRows = DatabaseUtils.queryNumEntries(db,Constants.TABLE_TASK);
+            Log.v("count before deleting",numRows.toString());
+            c = db.rawQuery(query, null);
+            Log.v("task_name_passed", t_name);
+
+
+            if (c.moveToFirst()) {
+                do {
+                    String temp = c.getString(c.getColumnIndex("Description"));
+                    Log.v("tasks_in_db", temp);
+
+                    //task_list.add(temp
+                    // task_details = new Task();
+
+                    if (temp.equals(t_name)) {
+
+                        ContentValues cv = new ContentValues();
+                        cv.put("Status","completed"); //These Fields should be your String values of actual column names
+
+                        Log.v("task_being_Del", t_name);
+                        String task_id = c.getString(0);
+                        Log.v("task_id_deleting", task_id);
+                        db.update(Constants.TABLE_TASK,cv, Task.COLUMN_TASK_ID + " = " + task_id , null);
+
+                        count++;
+                        Log.v("count",Integer.toString(count));
+
+                    }
+                } while (c.moveToNext());
+                Log.v("after while","deleting tasks");
+
+//                d = db.rawQuery(query1,null);
+//                Log.v("d",Integer.toString(d.getCount()));
+//                if(d.moveToFirst()) {
+//                    do {
+//                        Log.v("task desc db", d.getString(0));
+//                    } while (d.moveToNext());
+//                }
+
+                numRows = DatabaseUtils.queryNumEntries(db,Constants.TABLE_TASK);
+                db.setTransactionSuccessful();
+
+                db.endTransaction();
+                Log.v("count_after_deleting",numRows.toString());
+
             }
 
-            return tasks;
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 
+    }
+
+
+    public static void DeleteTask(String t_name) {
+
+        int count =1;
+        Log.v("enterd delete_task","entered");
+        String query = "Select * from " + Constants.TABLE_TASK;
+        String query1 = "Select * from " + Constants.TABLE_TASK;
+        Log.v("query is", query);
+        Cursor c,d;
+
+        try {
+            db.beginTransaction();
+            Long numRows = DatabaseUtils.queryNumEntries(db,Constants.TABLE_TASK);
+            Log.v("count before deleting",numRows.toString());
+            c = db.rawQuery(query, null);
+            Log.v("task_name_passed", t_name);
+
+
+            if (c.moveToFirst()) {
+                do {
+                    String temp = c.getString(c.getColumnIndex("Description"));
+                    Log.v("tasks_in_db", temp);
+
+                    //task_list.add(temp
+                    // task_details = new Task();
+
+                    if (temp.equals(t_name)) {
+                        Log.v("task_being_Del", t_name);
+                        String task_id = c.getString(0);
+                        Log.v("task_id_deleting", task_id);
+                        db.delete(Constants.TABLE_TASK, Task.COLUMN_TASK_ID + " = " + task_id , null);
+
+                        count++;
+                        Log.v("count",Integer.toString(count));
+
+                    }
+                } while (c.moveToNext());
+                Log.v("after while","deleting tasks");
+
+//                d = db.rawQuery(query1,null);
+//                Log.v("d",Integer.toString(d.getCount()));
+//                if(d.moveToFirst()) {
+//                    do {
+//                        Log.v("task desc db", d.getString(0));
+//                    } while (d.moveToNext());
+//                }
+
+                numRows = DatabaseUtils.queryNumEntries(db,Constants.TABLE_TASK);
+                db.setTransactionSuccessful();
+
+                db.endTransaction();
+                Log.v("count_after_deleting",numRows.toString());
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }
+

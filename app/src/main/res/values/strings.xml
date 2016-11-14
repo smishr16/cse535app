@@ -26,4 +26,6 @@
     <string name="button_delete">Delete</string>
     <string name="textview_addlocation_name">Location Name</string>
     <string name="button_addlocation_add">Add To Favourites</string>
+    <string name="edit_task">Edit Reminder</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
