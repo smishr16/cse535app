@@ -39,6 +39,9 @@ public class History extends AppCompatActivity {
         // Display locations from database
         displayHistory();
 
+        // Initialize taskList
+        taskList = DBManager.getCompletedTasks();
+
         // Click event for list view row
         ListView listView = (ListView) findViewById(R.id.listView_history);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

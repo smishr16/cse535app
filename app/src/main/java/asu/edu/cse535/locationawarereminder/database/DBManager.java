@@ -446,7 +446,7 @@ public class DBManager {
     public static ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
         String SEARCH_TABLE_QUERY = "SELECT * FROM " + Constants.TABLE_TASK + " WHERE " +
-                Task.COLUMN_TASK_STATUS + " = " + Constants.QUOTE + "COMPLETED" + Constants.QUOTE;
+                Task.COLUMN_TASK_STATUS + " = " + Constants.QUOTE + "Completed" + Constants.QUOTE;
         Task t = new Task();
         try {
             Cursor c = db.rawQuery(SEARCH_TABLE_QUERY, null);
