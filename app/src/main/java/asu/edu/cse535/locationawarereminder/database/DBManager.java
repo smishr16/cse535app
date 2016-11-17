@@ -102,6 +102,34 @@ public class DBManager {
     }
 
     public static void updateTask(Task t){
+        String UPDATE_TASK_QUERY = "UPDATE " + Constants.TABLE_TASK + " SET " + Task.COLUMN_DESC + " = " + Constants.QUOTE + t.getDesc() +
+                Constants.QUOTE + Constants.COMMA_SEP + " " + Task.COLUMN_TASK_DATE + " = " + Constants.QUOTE + t.getTaskDate() + Constants.QUOTE +
+                Constants.COMMA_SEP + " " + Task.COLUMN_MOT + " = " + Constants.QUOTE + t.getMot() + Constants.QUOTE + Constants.COMMA_SEP +
+                " " + Task.COLUMN_LAT + " = " + Constants.QUOTE + t.getLat() + Constants.QUOTE + Constants.COMMA_SEP + " " + Task.COLUMN_LONG +
+                " = " + Constants.QUOTE + t.getLng() + Constants.QUOTE + Constants.COMMA_SEP + " " + Task.COLUMN_TASK_STATUS + " = " +
+                Constants.QUOTE + t.getStatus() + Constants.QUOTE + Constants.COMMA_SEP + " " + Task.COLUMN_CREATED_DATE + " = " +
+                Constants.QUOTE + t.getCreatedDate() + Constants.QUOTE + " WHERE " + Task.COLUMN_TASK_ID + " = " + Constants.QUOTE +
+                t.getTaskId() + Constants.QUOTE;
+
+        try{
+            db.beginTransaction();
+            try {
+                db.execSQL(UPDATE_TASK_QUERY);
+                db.setTransactionSuccessful();
+                if(DEBUG)
+                    Toast.makeText(dbContext, "Task updated successfully", Toast.LENGTH_SHORT).show();
+            }
+            catch (SQLiteException e) {
+                e.printStackTrace();
+                Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            finally {
+                db.endTransaction();
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
     }
 

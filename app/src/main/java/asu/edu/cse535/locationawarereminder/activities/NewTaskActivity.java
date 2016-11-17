@@ -284,12 +284,26 @@ public class NewTaskActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            String address = addresses.get(0).getAddressLine(0);
-            String city = addresses.get(0).getLocality();
-            String state = addresses.get(0).getAdminArea();
+
             TextView locationText = (TextView) findViewById(R.id.textView_location);
-            locText = address + "," + city + "," + state;
-            locationText.setText(locText);
+
+            if (addresses != null && addresses.size()>0) {
+                String address = addresses.get(0).getAddressLine(0);
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                locText = address + ", " + city + ", " + state;
+                locationText.setText(locText);
+            }
+            else {
+                locationText.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
+            }
+
+
+            if (t.getLng() != 0.0 && t.getLat() != 0.0) {
+                this.t.setLat(t.getLat());
+                this.t.setLng(t.getLng());
+            }
+            
 
             if (t.getDesc() != null)
                 reminderDesc.setText(t.getDesc());
@@ -309,13 +323,6 @@ public class NewTaskActivity extends AppCompatActivity {
                     hour -= 12;
                 timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
                 time.setText(timepart);
-            }
-
-            TextView location = (TextView) findViewById(R.id.textView_location);
-            if (t.getLng() != 0.0 && t.getLat() != 0.0) {
-                location.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
-                this.t.setLat(t.getLat());
-                this.t.setLng(t.getLng());
             }
 
 
@@ -349,11 +356,11 @@ public class NewTaskActivity extends AppCompatActivity {
                                 c.set(year, month, dateField, hourOfDaySelected, minuteSelected);
                                 t.setTaskDate(c.getTime());
                             }
-                            if (radioWalk.isSelected())
+                            if (radioWalk.isChecked())
                                 t.setMot("Walking");
-                            else if (radioCycle.isSelected())
+                            else if (radioCycle.isChecked())
                                 t.setMot("Cycling");
-                            else if (radioDrive.isSelected())
+                            else if (radioDrive.isChecked())
                                 t.setMot("Driving");
                             mode_of_trnspt = t.getMot();
                             DBManager.updateTask(t);
