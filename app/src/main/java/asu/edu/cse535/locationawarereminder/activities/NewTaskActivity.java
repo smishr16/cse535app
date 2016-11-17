@@ -50,7 +50,7 @@ public class NewTaskActivity extends AppCompatActivity {
     static boolean DEBUG = false;
     static final int PLACE_PICKER_REQUEST = 1;
     int mode;
-    final Task t = new Task();
+    final Task globalTask = new Task();
     static Button buttonSave, buttonGetDirections, buttonMarkDone, buttonPickLocation, buttonAddReminder, buttonPickDate, buttonPickTime;
     static RadioGroup radioGroupMot;
     static RadioButton radioWalk, radioCycle, radioDrive;
@@ -59,11 +59,14 @@ public class NewTaskActivity extends AppCompatActivity {
     static int hourOfDaySelected, minuteSelected;
     String mode_of_trnspt;
     String locText;
+    DBManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_task_activity);
+
+        dbManager = new DBManager(NewTaskActivity.this);
 
         buttonSave = (Button)findViewById(R.id.button_save);
         buttonGetDirections = (Button)findViewById(R.id.button_get_directions);
@@ -120,26 +123,26 @@ public class NewTaskActivity extends AppCompatActivity {
                     TextView date = (TextView)findViewById(R.id.textView_date);
                     TextView time = (TextView)findViewById(R.id.textView_time);
 
-                    t.setDesc(reminderDesc.getText().toString());
+                    globalTask.setDesc(reminderDesc.getText().toString());
                     Calendar c = Calendar.getInstance();
                     if(!date.getText().toString().isEmpty() && !time.getText().toString().isEmpty()){
                         formatDateInput(date.getText().toString());
                         month -= 1;
                         c.set(year, month, dateField, hourOfDaySelected, minuteSelected);
-                        t.setTaskDate(c.getTime());
+                        globalTask.setTaskDate(c.getTime());
                     }
                     if(radioWalk.isChecked())
-                        t.setMot("Walking");
+                        globalTask.setMot("Walking");
                     else if(radioCycle.isChecked())
-                        t.setMot("Cycling");
+                        globalTask.setMot("Cycling");
                     else if(radioDrive.isChecked())
-                        t.setMot("Driving");
-                    t.setStatus("Created");
-                    t.setCreatedDate(c.getTime());
-                    DBManager.insertIntoTask(t);
+                        globalTask.setMot("Driving");
+                    globalTask.setStatus("Created");
+                    globalTask.setCreatedDate(c.getTime());
+                    dbManager.insertIntoTask(globalTask);
 
-                    int taskId = DBManager.getLastInserted();
-                    startLocationListener(taskId, t.getDesc(), t.getLat(), t.getLng());
+                    int taskId = dbManager.getLastInserted();
+                    startLocationListener(taskId, globalTask.getDesc(), globalTask.getLat(), globalTask.getLng());
 
                     finish();
                 }
@@ -174,7 +177,7 @@ public class NewTaskActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String loc_uri= "google.navigation:q=";
                 String url = null;
-                if(mode_of_trnspt != null){
+                if(mode_of_trnspt != null && !mode_of_trnspt.equalsIgnoreCase("null") && !mode_of_trnspt.isEmpty()){
                     if(mode_of_trnspt.equals("Walking"))
                         url = loc_uri + locText + "&mode=w";
                     if(mode_of_trnspt.equals("Cycling"))
@@ -197,7 +200,7 @@ public class NewTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int task_id = getIntent().getExtras().getInt("task_id");
-                DBManager.updateTaskStatus(task_id, "Completed");
+                dbManager.updateTaskStatus(task_id, "Completed");
                 finish();
             }
         });
@@ -232,7 +235,7 @@ public class NewTaskActivity extends AppCompatActivity {
             return false;
         }
 
-        if(t.getLat() == 0.0 && t.getLng() == 0.0){
+        if(globalTask.getLat() == 0.0 && globalTask.getLng() == 0.0){
             Toast.makeText(NewTaskActivity.this, "Pick a location", Toast.LENGTH_LONG).show();
             return false;
         }
@@ -248,8 +251,8 @@ public class NewTaskActivity extends AppCompatActivity {
                 LatLng lat_long =  place.getLatLng();
                 if(DEBUG)
                     Toast.makeText(NewTaskActivity.this, lat_long.latitude + " " + lat_long.longitude, Toast.LENGTH_SHORT).show();
-                t.setLat(lat_long.latitude);
-                t.setLng(lat_long.longitude);
+                globalTask.setLat(lat_long.latitude);
+                globalTask.setLng(lat_long.longitude);
                 TextView locationText = (TextView)findViewById(R.id.textView_location);
                 String locText = place.getName() + " " + place.getAddress();
                 locationText.setText(locText);
@@ -269,14 +272,14 @@ public class NewTaskActivity extends AppCompatActivity {
         else if (mode == R.string.add_task_from_fav) {
             hideControlsForFavLocTask();
             setTitle(R.string.new_task);
-            t.setLat(getIntent().getDoubleExtra("Latitude", 0.0));
-            t.setLng(getIntent().getDoubleExtra("Longitude", 0.0));
+            globalTask.setLat(getIntent().getDoubleExtra("Latitude", 0.0));
+            globalTask.setLng(getIntent().getDoubleExtra("Longitude", 0.0));
         }
         else if (mode == R.string.edit_task) {
             String formattedDate;
 
             int task_id = getIntent().getExtras().getInt("task_id");
-            final Task t = DBManager.getTaskByTaskId(task_id);
+            final Task t = dbManager.getTaskByTaskId(task_id);
 
             geocoder = new Geocoder(this, Locale.getDefault());
             try {
@@ -300,8 +303,8 @@ public class NewTaskActivity extends AppCompatActivity {
 
 
             if (t.getLng() != 0.0 && t.getLat() != 0.0) {
-                this.t.setLat(t.getLat());
-                this.t.setLng(t.getLng());
+                this.globalTask.setLat(t.getLat());
+                this.globalTask.setLng(t.getLng());
             }
             
 
@@ -363,7 +366,7 @@ public class NewTaskActivity extends AppCompatActivity {
                             else if (radioDrive.isChecked())
                                 t.setMot("Driving");
                             mode_of_trnspt = t.getMot();
-                            DBManager.updateTask(t);
+                            dbManager.updateTask(t);
                             finish();
                         }
                     } catch (Exception e) {
@@ -383,7 +386,7 @@ public class NewTaskActivity extends AppCompatActivity {
             String formattedDate;
 
             int task_id = getIntent().getExtras().getInt("task_id");
-            Task t = DBManager.getTaskByTaskId(task_id);
+            Task t = dbManager.getTaskByTaskId(task_id);
 
             if (t.getDesc() != null)
                 reminderDesc.setText(t.getDesc());

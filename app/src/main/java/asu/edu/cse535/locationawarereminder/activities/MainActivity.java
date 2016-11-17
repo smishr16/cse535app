@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> task_desc_list = new ArrayList<>();
 
     SQLiteDatabase db;
+    DBManager dbManager;
     static double currLatitude;
     static double currLongitude;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Create database
-        DBManager dbManager = new DBManager(MainActivity.this);
+        dbManager = new DBManager(MainActivity.this);
         dbManager.initializeDB(this.getApplicationContext().getPackageName());
         db = dbManager.getAppDataBase();
 
@@ -176,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         task_list.clear();
         task_desc_list.clear();
 
-        task_list = DBManager.get_all_tasks();
+        task_list = dbManager.get_all_tasks();
 
         for(Task task : task_list){
             String taskDesc = task.getDesc();
@@ -219,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    DBManager.updateTaskStatus(task_id, "Completed");
+                    dbManager.updateTaskStatus(task_id, "Completed");
                     load_tasks_from_db();
                 }
             });
@@ -227,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    DBManager.updateTaskStatus(task_id, "Removed");
+                    dbManager.updateTaskStatus(task_id, "Removed");
                     load_tasks_from_db();
                 }
             });
