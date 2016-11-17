@@ -322,6 +322,8 @@ public class NewTaskActivity extends AppCompatActivity {
                 String amPm = getAmPm(hour);
                 if (hour > 12)
                     hour -= 12;
+                else if (hour == 0)
+                    hour = 12;
                 timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
                 time.setText(timepart);
             }
@@ -401,6 +403,8 @@ public class NewTaskActivity extends AppCompatActivity {
                 String amPm = getAmPm(hour);
                 if (hour > 12)
                     hour -= 12;
+                else if (hour == 0)
+                    hour = 12;
                 timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
                 time.setText(timepart);
             }
@@ -443,6 +447,8 @@ public class NewTaskActivity extends AppCompatActivity {
                 String amPm = getAmPm(hour);
                 if (hour > 12)
                     hour -= 12;
+                else if (hour == 0)
+                    hour = 12;
                 timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
                 time.setText(timepart);
             }
