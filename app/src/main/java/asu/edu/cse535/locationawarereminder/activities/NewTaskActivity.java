@@ -301,12 +301,10 @@ public class NewTaskActivity extends AppCompatActivity {
                 locationText.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
             }
 
-
             if (t.getLng() != 0.0 && t.getLat() != 0.0) {
                 this.globalTask.setLat(t.getLat());
                 this.globalTask.setLng(t.getLng());
             }
-            
 
             if (t.getDesc() != null)
                 reminderDesc.setText(t.getDesc());
@@ -327,7 +325,6 @@ public class NewTaskActivity extends AppCompatActivity {
                 timepart = (hour < 10 ? "0" + hour : hour) + ":" + timepart.split(":")[1] + " " + amPm;
                 time.setText(timepart);
             }
-
 
             if (t.getMot().equals("Walking"))
                 radioWalk.setChecked(true);

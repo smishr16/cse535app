@@ -107,7 +107,7 @@ public class DBManager {
                 Constants.COMMA_SEP + " " + Task.COLUMN_MOT + " = " + Constants.QUOTE + t.getMot() + Constants.QUOTE + Constants.COMMA_SEP +
                 " " + Task.COLUMN_LAT + " = " + Constants.QUOTE + t.getLat() + Constants.QUOTE + Constants.COMMA_SEP + " " + Task.COLUMN_LONG +
                 " = " + Constants.QUOTE + t.getLng() + Constants.QUOTE + Constants.COMMA_SEP + " " + Task.COLUMN_TASK_STATUS + " = " +
-                Constants.QUOTE + t.getStatus() + Constants.QUOTE + Constants.COMMA_SEP + " WHERE " + Task.COLUMN_TASK_ID + " = " + Constants.QUOTE +
+                Constants.QUOTE + t.getStatus() + Constants.QUOTE + " WHERE " + Task.COLUMN_TASK_ID + " = " + Constants.QUOTE +
                 t.getTaskId() + Constants.QUOTE;
 
         try{
