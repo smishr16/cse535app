@@ -477,6 +477,25 @@ public class DBManager {
         return taskNames;
     }
 
+    public static ArrayList<String> getCompletedTaskAddress(){
+        ArrayList<String> taskAddress = new ArrayList<>();
+        String query = "SELECT * FROM " + Constants.TABLE_TASK + " WHERE " +
+                Task.COLUMN_TASK_STATUS + " = " + Constants.QUOTE + "Completed" + Constants.QUOTE +
+                " ORDER BY " + Task.COLUMN_CREATED_DATE + " DESC ";
+        Cursor c;
+        db.beginTransaction();
+        c = db.rawQuery(query,null);
+        if (c.moveToFirst()){
+            do{
+                String temp = c.getString(c.getColumnIndex("Location_Desc"));
+                taskAddress.add(temp);
+            }while(c.moveToNext());
+        }
+        c.close();
+        db.endTransaction();
+        return taskAddress;
+    }
+
     public static ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
         String SEARCH_TABLE_QUERY = "SELECT * FROM " + Constants.TABLE_TASK + " WHERE " +

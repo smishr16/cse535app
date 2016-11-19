@@ -10,8 +10,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -22,8 +25,10 @@ import asu.edu.cse535.locationawarereminder.database.Task;
  */
 
 public class History extends AppCompatActivity {
+    ArrayList<String> taskNameList = new ArrayList<>();
     ArrayList<String> historyList = new ArrayList<>();
     ArrayList<Task> taskList = new ArrayList<>();
+    ArrayList<String> addressList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +68,19 @@ public class History extends AppCompatActivity {
 
     public void displayHistory() {
         final ListView lv = (ListView) findViewById(R.id.listView_history);
-        historyList= DBManager.getCompletedTaskNames();
+        taskNameList = DBManager.getCompletedTaskNames();
+        addressList = DBManager.getCompletedTaskAddress();
+        if (taskNameList.size()>0 && addressList.size()>0 && taskNameList.size()==addressList.size()){
+            for (int i=0; i<taskNameList.size(); i++){
+                String temp = "Task: ";
+                String address = "Address: ";
+                temp = temp + taskNameList.get(i) + System.getProperty("line.separator");
+                address = address + addressList.get(i);
+                temp = temp + address;
+                historyList.add(i, temp);
+            }
+        }
+
         if(historyList.size()>0){
             // Create a List from String Array elements
             final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<> (this, R.layout.history_item, R.id.history_name, historyList);
