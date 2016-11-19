@@ -52,6 +52,7 @@ public class History extends AppCompatActivity {
                 intent.putExtra("Task Description", taskList.get(position).getDesc());
                 intent.putExtra("Lat", taskList.get(position).getLat());
                 intent.putExtra("Long", taskList.get(position).getLng());
+                intent.putExtra("Location", taskList.get(position).getLocDesc());
                 intent.putExtra("Date", taskList.get(position).getTaskDate());
                 intent.putExtra("Mot", taskList.get(position).getMot());
                 intent.putExtra("Mode", R.string.completed_task);

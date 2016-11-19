@@ -45,8 +45,9 @@ public class DBManager {
                 Task.COLUMN_DESC + " " + Constants.DATATYPE_STRING + " NOT NULL " + Constants.COMMA_SEP +
                 Task.COLUMN_TASK_DATE + " " + Constants.DATATYPE_DATETIME + Constants.COMMA_SEP +
                 Task.COLUMN_MOT + " " + Constants.DATATYPE_STRING + Constants.COMMA_SEP +
-                Task.COLUMN_LAT + " " + Constants.DATATYPE_DOUBLE + "NOT NULL" + Constants.COMMA_SEP +
-                Task.COLUMN_LONG + " " + Constants.DATATYPE_DOUBLE + "NOT NULL" + Constants.COMMA_SEP +
+                Task.COLUMN_LAT + " " + Constants.DATATYPE_DOUBLE + " NOT NULL " + Constants.COMMA_SEP +
+                Task.COLUMN_LONG + " " + Constants.DATATYPE_DOUBLE + " NOT NULL " + Constants.COMMA_SEP +
+                Task.COLUMN_LOC_DESC + " " + Constants.DATATYPE_STRING + " NOT NULL " + Constants.COMMA_SEP +
                 Task.COLUMN_TASK_STATUS + " " + Constants.DATATYPE_STRING + Constants.COMMA_SEP +
                 Task.COLUMN_CREATED_DATE + " " + Constants.DATATYPE_DATETIME + " ) ";
 
@@ -74,12 +75,14 @@ public class DBManager {
     public static void insertIntoTask(Task t) {
         String INSERT_TABLE_QUERY = "INSERT INTO " + Constants.TABLE_TASK + " ( " + Task.COLUMN_DESC + Constants.COMMA_SEP +
                 Task.COLUMN_TASK_DATE + Constants.COMMA_SEP + Task.COLUMN_MOT + Constants.COMMA_SEP + Task.COLUMN_LAT +
-                Constants.COMMA_SEP + Task.COLUMN_LONG + Constants.COMMA_SEP + Task.COLUMN_TASK_STATUS + Constants.COMMA_SEP +
-                Task.COLUMN_CREATED_DATE + " ) VALUES (" +
+                Constants.COMMA_SEP + Task.COLUMN_LONG + Constants.COMMA_SEP + Task.COLUMN_LOC_DESC + Constants.COMMA_SEP +
+                Task.COLUMN_TASK_STATUS + Constants.COMMA_SEP + Task.COLUMN_CREATED_DATE + " ) VALUES (" +
                 Constants.QUOTE +  t.getDesc() + Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getTaskDate() +
                 Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getMot() + Constants.QUOTE + Constants.COMMA_SEP +
-                t.getLat() + Constants.COMMA_SEP + t.getLng() + Constants.COMMA_SEP + Constants.QUOTE + t.getStatus() +
-                Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getCreatedDate() + Constants.QUOTE + ")";
+                t.getLat() + Constants.COMMA_SEP + t.getLng() + Constants.COMMA_SEP + Constants.QUOTE +
+                t.getLocDesc().replace("\"", " ").replace("'",".") + Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE +
+                t.getStatus() + Constants.QUOTE + Constants.COMMA_SEP + Constants.QUOTE + t.getCreatedDate() +
+                Constants.QUOTE + ")";
         try{
             db.beginTransaction();
             try {
@@ -182,6 +185,7 @@ public class DBManager {
                 t.setDesc(c.getString(c.getColumnIndex(Task.COLUMN_DESC)));
                 t.setLat(c.getDouble(c.getColumnIndex(Task.COLUMN_LAT)));
                 t.setLng(c.getDouble(c.getColumnIndex(Task.COLUMN_LONG)));
+                t.setLocDesc(c.getString(c.getColumnIndex(Task.COLUMN_LOC_DESC)));
                 t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
                 String createdDate = c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE));
                 if(!TextUtils.isEmpty(createdDate) && !createdDate.equals("null")){
@@ -487,6 +491,7 @@ public class DBManager {
                     t.setDesc(c.getString(c.getColumnIndex(Task.COLUMN_DESC)));
                     t.setLat(c.getDouble(c.getColumnIndex(Task.COLUMN_LAT)));
                     t.setLng(c.getDouble(c.getColumnIndex(Task.COLUMN_LONG)));
+                    t.setLocDesc(c.getString(c.getColumnIndex(Task.COLUMN_LOC_DESC)));
                     t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
                     String createdDate = c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE));
                     if (!TextUtils.isEmpty(createdDate) && !createdDate.equals("null")) {

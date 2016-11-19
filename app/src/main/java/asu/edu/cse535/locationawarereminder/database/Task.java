@@ -13,6 +13,7 @@ public class Task {
     public static String COLUMN_MOT = "MOT";
     public static String COLUMN_LAT = "Latitude";
     public static String COLUMN_LONG = "Longitude";
+    public static String COLUMN_LOC_DESC = "Location_Desc";
     public static String COLUMN_TASK_STATUS = "Status";
     public static String COLUMN_CREATED_DATE = "Created_Date";
 
@@ -22,6 +23,7 @@ public class Task {
     private String mot;
     private double lat;
     private double lng;
+    private String locDesc;
     private String status;
     private Date createdDate;
 
@@ -29,12 +31,13 @@ public class Task {
 
     }
 
-    public Task(String desc, Date taskDate, String mot, double lat, double lng, String status, Date createdDate){
+    public Task(String desc, Date taskDate, String mot, double lat, double lng, String locDesc, String status, Date createdDate){
         this.desc = desc;
         this.taskDate = taskDate;
         this.mot = mot;
         this.lat = lat;
         this.lng = lng;
+        this.locDesc = locDesc;
         this.status = status;
         this.createdDate = createdDate;
     }
@@ -101,5 +104,13 @@ public class Task {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getLocDesc() {
+        return locDesc;
+    }
+
+    public void setLocDesc(String locDesc) {
+        this.locDesc = locDesc;
     }
 }

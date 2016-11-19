@@ -6,8 +6,6 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,8 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -45,8 +41,6 @@ import asu.edu.cse535.locationawarereminder.services.LocationListenerService;
  */
 public class NewTaskActivity extends AppCompatActivity {
 
-    Geocoder geocoder;
-    List<Address> addresses;
     static boolean DEBUG = false;
     static final int PLACE_PICKER_REQUEST = 1;
     int mode;
@@ -139,6 +133,10 @@ public class NewTaskActivity extends AppCompatActivity {
                         globalTask.setMot("Driving");
                     globalTask.setStatus("Created");
                     globalTask.setCreatedDate(c.getTime());
+
+                    TextView locationText = (TextView) findViewById(R.id.textView_location);
+                    globalTask.setLocDesc(locationText.getText().toString());
+
                     dbManager.insertIntoTask(globalTask);
 
                     int taskId = dbManager.getLastInserted();
@@ -281,25 +279,10 @@ public class NewTaskActivity extends AppCompatActivity {
             int task_id = getIntent().getExtras().getInt("task_id");
             final Task t = dbManager.getTaskByTaskId(task_id);
 
-            geocoder = new Geocoder(this, Locale.getDefault());
-            try {
-                addresses = geocoder.getFromLocation(t.getLat(), t.getLng(), 1);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
             TextView locationText = (TextView) findViewById(R.id.textView_location);
+            locationText.setText(t.getLocDesc());
 
-            if (addresses != null && addresses.size()>0) {
-                String address = addresses.get(0).getAddressLine(0);
-                String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                locText = address + ", " + city + ", " + state;
-                locationText.setText(locText);
-            }
-            else {
-                locationText.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
-            }
+            locText = t.getLat() + "," + t.getLng();
 
             if (t.getLng() != 0.0 && t.getLat() != 0.0) {
                 this.globalTask.setLat(t.getLat());
@@ -410,8 +393,7 @@ public class NewTaskActivity extends AppCompatActivity {
             }
 
             TextView location = (TextView) findViewById(R.id.textView_location);
-            if (t.getLng() != 0.0 && t.getLat() != 0.0)
-                location.setText("Latitude : " + t.getLat() + " Longitude : " + t.getLng());
+            location.setText(t.getLocDesc());
 
             if (t.getMot().equals("Walking"))
                 radioWalk.setChecked(true);
@@ -434,8 +416,8 @@ public class NewTaskActivity extends AppCompatActivity {
 
             TextView date = (TextView) findViewById(R.id.textView_date);
             TextView time = (TextView) findViewById(R.id.textView_time);
+
             /* Convert date to display format */
-            //String convDate = getIntent().getExtras().getString("Date");
             Date convDate = (Date)getIntent().getSerializableExtra("Date");
             if (convDate != null) {
                 String displayFormat = "MM/dd/yyyy HH:mm:ss";
@@ -454,10 +436,7 @@ public class NewTaskActivity extends AppCompatActivity {
             }
 
             TextView location = (TextView) findViewById(R.id.textView_location);
-            Double lat = getIntent().getExtras().getDouble("Lat");
-            Double lng = getIntent().getExtras().getDouble("Long");
-            if (lng != 0.0  && lat != 0.0)
-                location.setText("Latitude : " + lat + " Longitude : " + lng);
+            location.setText(getIntent().getExtras().getString("Location"));
 
             String mot = getIntent().getExtras().getString("Mot");
             if (mot.equals("Walking"))
@@ -528,13 +507,6 @@ public class NewTaskActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        /*switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);*/
         finish();
         return true;
     }
