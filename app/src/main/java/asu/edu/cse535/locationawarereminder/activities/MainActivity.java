@@ -210,6 +210,9 @@ public class MainActivity extends AppCompatActivity {
             View rowView = inflater.inflate(layoutResourceId, null, true);
             TextView taskDesc = (TextView) rowView.findViewById(R.id.rowTextView);
             taskDesc.setText(task_desc_list.get(position));
+            if(task_list.get(position).getStatus().equals("Notified")) {
+                rowView.setBackgroundColor(0xffffff00);
+            }
 
             Button button_mark_done = (Button) rowView.findViewById(R.id.button_mark_done_main);
             Button button_delete = (Button) rowView.findViewById(R.id.button_delete_task_main);

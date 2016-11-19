@@ -134,7 +134,8 @@ public class LocationListenerService extends Service {
                     emailId = getEmail();
                     if (!emailId.equals("")) {
                         sendEmail(emailId, message);
-                    }
+                    };
+                    DBManager.updateTaskStatus(t.getTaskId(),"Notified");
 
                     //PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
                     //LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);

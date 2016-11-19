@@ -147,6 +147,7 @@ public class DBManager {
                 Task task = new Task();
                 task.setTaskId(c.getInt(c.getColumnIndex(Task.COLUMN_TASK_ID)));
                 task.setDesc(c.getString(c.getColumnIndex(Task.COLUMN_DESC)));
+                task.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
                 task_list.add(task);
             }while(c.moveToNext());
         }
