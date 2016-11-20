@@ -10,11 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -72,10 +69,10 @@ public class History extends AppCompatActivity {
         addressList = DBManager.getCompletedTaskAddress();
         if (taskNameList.size()>0 && addressList.size()>0 && taskNameList.size()==addressList.size()){
             for (int i=0; i<taskNameList.size(); i++){
-                String temp = "Task: ";
-                String address = "Address: ";
-                temp = temp + taskNameList.get(i) + System.getProperty("line.separator");
-                address = address + addressList.get(i);
+                String temp = "";
+                String address = "";
+                temp = taskNameList.get(i) + System.getProperty("line.separator");
+                address = addressList.get(i);
                 temp = temp + address;
                 historyList.add(i, temp);
             }

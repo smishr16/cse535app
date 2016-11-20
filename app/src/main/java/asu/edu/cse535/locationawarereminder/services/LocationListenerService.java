@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +21,8 @@ import android.telephony.SmsManager;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -36,7 +39,6 @@ import asu.edu.cse535.locationawarereminder.database.Constants;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
 import asu.edu.cse535.locationawarereminder.database.Properties;
 import asu.edu.cse535.locationawarereminder.database.Task;
-
 
 
 /**
@@ -72,22 +74,37 @@ public class LocationListenerService extends Service {
         return START_REDELIVER_INTENT;
     }
 
-    private void createProximityAlert(int task_id, String desc, double lat, double lng) {
-        LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
+    private void createProximityAlert(int task_id, String desc, final double lat, final double lng) {
+        final LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         Intent intent = new Intent("lar.proximityalert");           //Custom Action
         intent.putExtra("taskId", task_id);
         intent.putExtra("taskDesc", desc);
-        PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
+        final PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
 
-        float radius = 100;
+        final float radius = 100;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        locMgr.addProximityAlert(lat, lng, radius, -1, pi);
-        IntentFilter filter = new IntentFilter("lar.proximityalert");
-        registerReceiver(new ProximityIntentReceiver(), filter);
-        /*PendingIntent piRemove = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
-        locMgr.removeProximityAlert(piRemove);*/
+        Task task = DBManager.getTaskByTaskId(task_id);
+        Date taskDate = task.getTaskDate();
+        long delay = 0;
+        if (taskDate != null) {
+            Calendar c = Calendar.getInstance();
+            Date currDate = c.getTime();
+            delay = taskDate.getTime() - currDate.getTime();
+        }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                locMgr.addProximityAlert(lat, lng, radius, -1, pi);
+                IntentFilter filter = new IntentFilter("lar.proximityalert");
+                registerReceiver(new ProximityIntentReceiver(), filter);
+            }
+        }, delay);
     }
 
     public class ProximityIntentReceiver extends BroadcastReceiver {

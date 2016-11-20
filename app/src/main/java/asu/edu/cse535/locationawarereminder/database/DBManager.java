@@ -140,14 +140,25 @@ public class DBManager {
         String query = "SELECT *" + " FROM " + Constants.TABLE_TASK + " WHERE " +
                 Task.COLUMN_TASK_STATUS + " NOT IN ( " + Constants.QUOTE + "Completed" + Constants.QUOTE
                 + Constants.COMMA_SEP + Constants.QUOTE + "Removed" + Constants.QUOTE + " )";
+        String actualFormat = "EEE MMM dd HH:mm:ss Z yyyy";
         Cursor c;
         c = db.rawQuery(query, null);
         if (c.moveToFirst()){
             do{
                 Task task = new Task();
+                Date storedDate;
                 task.setTaskId(c.getInt(c.getColumnIndex(Task.COLUMN_TASK_ID)));
                 task.setDesc(c.getString(c.getColumnIndex(Task.COLUMN_DESC)));
                 task.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
+                String taskDate = c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE));
+                try{
+                    if(!TextUtils.isEmpty(taskDate) && !taskDate.equals("null")){
+                        storedDate = new SimpleDateFormat(actualFormat).parse(taskDate);
+                        task.setTaskDate(storedDate);
+                    }
+                } catch(ParseException e) {
+                    e.printStackTrace();
+                }
                 task_list.add(task);
             }while(c.moveToNext());
         }

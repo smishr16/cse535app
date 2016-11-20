@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -211,8 +214,16 @@ public class MainActivity extends AppCompatActivity {
             TextView taskDesc = (TextView) rowView.findViewById(R.id.rowTextView);
             taskDesc.setText(task_desc_list.get(position));
             if(task_list.get(position).getStatus().equals("Notified")) {
-                rowView.setBackgroundColor(0xffffff00);
+                rowView.setBackground(ContextCompat.getDrawable(context, R.drawable.green_background));
             }
+
+            Calendar c = Calendar.getInstance();
+            Date currDate = c.getTime();
+            Date taskDate = task_list.get(position).getTaskDate();
+            String taskStatus = task_list.get(position).getStatus();
+            if(taskDate != null)
+                if(taskDate.compareTo(currDate) < 0 && !taskStatus.equalsIgnoreCase("Completed"))
+                    rowView.setBackground(ContextCompat.getDrawable(context, R.drawable.red_background));
 
             Button button_mark_done = (Button) rowView.findViewById(R.id.button_mark_done_main);
             Button button_delete = (Button) rowView.findViewById(R.id.button_delete_task_main);

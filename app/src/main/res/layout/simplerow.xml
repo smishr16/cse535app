@@ -26,7 +26,6 @@
         android:focusableInTouchMode="false"
         android:text="@string/button_mark_done"
         android:textAllCaps="false"
-        android:backgroundTint="@color/green"
         android:textStyle="bold"
         />
 
@@ -35,7 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/button_mark_done_main"
-        android:backgroundTint="@color/red"
         android:layout_marginRight="3dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
