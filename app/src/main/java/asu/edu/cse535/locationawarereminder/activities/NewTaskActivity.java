@@ -370,6 +370,8 @@ public class NewTaskActivity extends AppCompatActivity {
             int task_id = getIntent().getExtras().getInt("task_id");
             Task t = dbManager.getTaskByTaskId(task_id);
 
+            locText = t.getLat() + "," + t.getLng();
+
             if (t.getDesc() != null)
                 reminderDesc.setText(t.getDesc());
 
