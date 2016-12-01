@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import asu.edu.cse535.locationawarereminder.R;
 import asu.edu.cse535.locationawarereminder.database.DBManager;
@@ -137,9 +138,9 @@ public class NewTaskActivity extends AppCompatActivity {
                     TextView locationText = (TextView) findViewById(R.id.textView_location);
                     globalTask.setLocDesc(locationText.getText().toString());
 
-                    dbManager.insertIntoTask(globalTask);
+                    DBManager.insertIntoTask(globalTask);
 
-                    int taskId = dbManager.getLastInserted();
+                    int taskId = DBManager.getLastInserted();
                     startLocationListener(taskId, globalTask.getDesc(), globalTask.getLat(), globalTask.getLng());
 
                     finish();
@@ -198,7 +199,7 @@ public class NewTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int task_id = getIntent().getExtras().getInt("task_id");
-                dbManager.updateTaskStatus(task_id, "Completed");
+                DBManager.updateTaskStatus(task_id, "Completed");
                 finish();
             }
         });
@@ -277,7 +278,7 @@ public class NewTaskActivity extends AppCompatActivity {
             String formattedDate;
 
             int task_id = getIntent().getExtras().getInt("task_id");
-            final Task t = dbManager.getTaskByTaskId(task_id);
+            final Task t = DBManager.getTaskByTaskId(task_id);
 
             TextView locationText = (TextView) findViewById(R.id.textView_location);
             locationText.setText(t.getLocDesc());
@@ -297,7 +298,7 @@ public class NewTaskActivity extends AppCompatActivity {
             /* Convert date to display format */
             if (t.getTaskDate() != null) {
                 String displayFormat = "MM/dd/yyyy HH:mm:ss";
-                formattedDate = new SimpleDateFormat(displayFormat).format(t.getTaskDate());
+                formattedDate = new SimpleDateFormat(displayFormat, Locale.US).format(t.getTaskDate());
                 String datePart = formattedDate.split(" ")[0];
                 date.setText(datePart);
                 String timepart = formattedDate.split(" ")[1];
@@ -311,12 +312,17 @@ public class NewTaskActivity extends AppCompatActivity {
                 time.setText(timepart);
             }
 
-            if (t.getMot().equals("Walking"))
-                radioWalk.setChecked(true);
-            else if (t.getMot().equals("Cycling"))
-                radioCycle.setChecked(true);
-            else if (t.getMot().equals("Driving"))
-                radioDrive.setChecked(true);
+            switch (t.getMot()) {
+                case "Walking":
+                    radioWalk.setChecked(true);
+                    break;
+                case "Cycling":
+                    radioCycle.setChecked(true);
+                    break;
+                case "Driving":
+                    radioDrive.setChecked(true);
+                    break;
+            }
             mode_of_trnspt = t.getMot();
 
             hideControlsForEditTask();
@@ -348,7 +354,7 @@ public class NewTaskActivity extends AppCompatActivity {
                             else if (radioDrive.isChecked())
                                 t.setMot("Driving");
                             mode_of_trnspt = t.getMot();
-                            dbManager.updateTask(t);
+                            DBManager.updateTask(t);
                             finish();
                         }
                     } catch (Exception e) {
@@ -368,7 +374,7 @@ public class NewTaskActivity extends AppCompatActivity {
             String formattedDate;
 
             int task_id = getIntent().getExtras().getInt("task_id");
-            Task t = dbManager.getTaskByTaskId(task_id);
+            Task t = DBManager.getTaskByTaskId(task_id);
 
             locText = t.getLat() + "," + t.getLng();
 
@@ -380,7 +386,7 @@ public class NewTaskActivity extends AppCompatActivity {
             /* Convert date to display format */
             if (t.getTaskDate() != null) {
                 String displayFormat = "MM/dd/yyyy HH:mm:ss";
-                formattedDate = new SimpleDateFormat(displayFormat).format(t.getTaskDate());
+                formattedDate = new SimpleDateFormat(displayFormat, Locale.US).format(t.getTaskDate());
                 String datePart = formattedDate.split(" ")[0];
                 date.setText(datePart);
                 String timepart = formattedDate.split(" ")[1];
@@ -397,12 +403,17 @@ public class NewTaskActivity extends AppCompatActivity {
             TextView location = (TextView) findViewById(R.id.textView_location);
             location.setText(t.getLocDesc());
 
-            if (t.getMot().equals("Walking"))
-                radioWalk.setChecked(true);
-            else if (t.getMot().equals("Cycling"))
-                radioCycle.setChecked(true);
-            else if (t.getMot().equals("Driving"))
-                radioDrive.setChecked(true);
+            switch (t.getMot()) {
+                case "Walking":
+                    radioWalk.setChecked(true);
+                    break;
+                case "Cycling":
+                    radioCycle.setChecked(true);
+                    break;
+                case "Driving":
+                    radioDrive.setChecked(true);
+                    break;
+            }
             mode_of_trnspt = t.getMot();
 
             hideControlsForViewTask();
@@ -410,10 +421,9 @@ public class NewTaskActivity extends AppCompatActivity {
         }
         else if (mode == R.string.completed_task) {
             String formattedDate;
-
             String taskDesc = getIntent().getExtras().getString("Task Description");
 
-            if (!taskDesc.equals(""))
+            if (taskDesc != null && !taskDesc.isEmpty())
                 reminderDesc.setText(taskDesc);
 
             TextView date = (TextView) findViewById(R.id.textView_date);
@@ -423,7 +433,7 @@ public class NewTaskActivity extends AppCompatActivity {
             Date convDate = (Date)getIntent().getSerializableExtra("Date");
             if (convDate != null) {
                 String displayFormat = "MM/dd/yyyy HH:mm:ss";
-                formattedDate = new SimpleDateFormat(displayFormat).format(convDate);
+                formattedDate = new SimpleDateFormat(displayFormat, Locale.US).format(convDate);
                 String datePart = formattedDate.split(" ")[0];
                 date.setText(datePart);
                 String timepart = formattedDate.split(" ")[1];
@@ -441,12 +451,19 @@ public class NewTaskActivity extends AppCompatActivity {
             location.setText(getIntent().getExtras().getString("Location"));
 
             String mot = getIntent().getExtras().getString("Mot");
-            if (mot.equals("Walking"))
-                radioWalk.setChecked(true);
-            else if (mot.equals("Cycling"))
-                radioCycle.setChecked(true);
-            else if (mot.equals("Driving"))
-                radioDrive.setChecked(true);
+            if(mot != null){
+                switch (mot) {
+                    case "Walking":
+                        radioWalk.setChecked(true);
+                        break;
+                    case "Cycling":
+                        radioCycle.setChecked(true);
+                        break;
+                    case "Driving":
+                        radioDrive.setChecked(true);
+                        break;
+                }
+            }
 
             hideControlsForCompletedTask();
             setTitle(R.string.completed_task);
@@ -529,8 +546,6 @@ public class NewTaskActivity extends AppCompatActivity {
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DATE);
-
-
             datePickerDialog  = new DatePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog,this,year,month,day);
 
             return datePickerDialog;
@@ -571,7 +586,7 @@ public class NewTaskActivity extends AppCompatActivity {
             displayTime.setText(timeText);
 
             try {
-                final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+                final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm", Locale.US);
                 final Date dt = sdf.parse(time);
                 displayTime.setText(sdf.format(dt) + " " + amPm);
             } catch (final ParseException e) {

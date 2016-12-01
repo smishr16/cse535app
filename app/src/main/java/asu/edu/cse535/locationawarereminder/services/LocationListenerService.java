@@ -20,7 +20,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
-import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -31,14 +30,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -57,7 +54,6 @@ import asu.edu.cse535.locationawarereminder.database.Task;
  * Created by Sooraj on 10/31/2016.
  */
 public class LocationListenerService extends Service {
-    final String TAG = "LAR";
     private int taskId;
 
     @Nullable
@@ -75,13 +71,9 @@ public class LocationListenerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         System.out.println("Inside onstartcommand method");
-        int taskId = intent.getExtras().getInt("task_id");
-        this.taskId = taskId;
-        String desc = intent.getExtras().getString("task_desc");
-        double lat = intent.getExtras().getDouble("lat");
-        double lng = intent.getExtras().getDouble("lng");
+        this.taskId = intent.getExtras().getInt("task_id");
 
-        new TravelTime().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+        new TravelTime().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (String) null);
         return START_REDELIVER_INTENT;
     }
 
@@ -98,7 +90,6 @@ public class LocationListenerService extends Service {
             try {
                 Task task = DBManager.getTaskByTaskId(taskId);
                 Date taskDate = task.getTaskDate();
-                long delay = 0;
                 if (taskDate != null) {
                     if (ContextCompat.checkSelfPermission(LocationListenerService.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         for (int i = 0; i < 5; i++)
@@ -177,7 +168,7 @@ public class LocationListenerService extends Service {
         final Task task = DBManager.getTaskByTaskId(taskId);
 
         final LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Intent intent = new Intent("lar.proximityalert");           //Custom Action
+        Intent intent = new Intent("lar.proximityalert");
         intent.putExtra("taskId", taskId);
         intent.putExtra("taskDesc", task.getDesc());
         final PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, taskId, intent, 0);
@@ -215,7 +206,7 @@ public class LocationListenerService extends Service {
                         builder.setSmallIcon(R.drawable.common_ic_googleplayservices);
                         builder.setContentIntent(notificationIntent);
                         builder.setOngoing(false);
-                        builder.setSubText("Description : " + task.getDesc());   //API level 16
+                        builder.setSubText("Description : " + task.getDesc());
                         notificationManager.notify(task.getTaskId()*100, builder.build());
                     }
                 }
@@ -257,7 +248,7 @@ public class LocationListenerService extends Service {
                     builder.setSmallIcon(R.drawable.common_ic_googleplayservices);
                     builder.setContentIntent(notificationIntent);
                     builder.setOngoing(false);
-                    builder.setSubText("Description : " + desc);   //API level 16
+                    builder.setSubText("Description : " + desc);
                     notificationManager.notify(task_id, builder.build());
 
                     String message = "You have open reminders for this location" + System.getProperty("line.separator") +
@@ -273,16 +264,13 @@ public class LocationListenerService extends Service {
                     emailId = getEmail();
                     if (!emailId.equals("")) {
                         sendEmail(emailId, message);
-                    };
+                    }
                     DBManager.updateTaskStatus(t.getTaskId(),"Notified");
 
-                    //PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
-                    //LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
                     if (ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
                 }
-                //locMgr.removeProximityAlert(removePi);
                 context.unregisterReceiver(this);
             }
         }
@@ -320,7 +308,6 @@ public class LocationListenerService extends Service {
 
         sentPI= PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
 
-
         deliveredPI= PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED),0);
         //---SMS has been sent---
         sendBroadcastReceiver= new BroadcastReceiver() {
@@ -328,29 +315,14 @@ public class LocationListenerService extends Service {
             public void onReceive(Context arg0, Intent arg1) {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
-                        Log.v(TAG, "SMS sent");
-                        //Toast.makeText(getBaseContext(), "SMS Sent",
-                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        Log.v(TAG, "Generic failure");
-                        //Toast.makeText(getBaseContext(), "Generic Failure",
-                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        Log.v(TAG, "No Service");
-                        //Toast.makeText(getBaseContext(), "No Service",
-                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_NULL_PDU:
-                        Log.v(TAG, "Null PDU");
-                        //Toast.makeText(getBaseContext(), "Null PDU",
-                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        Log.v(TAG, "Radio Off");
-                        //Toast.makeText(getBaseContext(), "Radio Off",
-                        //Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -362,14 +334,8 @@ public class LocationListenerService extends Service {
             public void onReceive(Context arg0, Intent arg1) {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
-                        Log.v(TAG, "SMS Delivered");
-                        //Toast.makeText(getBaseContext(), "SMS delivered",
-                        //Toast.LENGTH_SHORT).show();
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.v(TAG, "SMS Not Delivered");
-                        //Toast.makeText(getBaseContext(), "SMS Not Delivered",
-                        //Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -413,13 +379,8 @@ public class LocationListenerService extends Service {
                 message.setSubject(subject);
                 message.setContent(textMessage, "text/html; charset=utf-8");
                 Transport.send(message);
-                Log.v(TAG, "Email Delivered");
-            } catch(MessagingException e) {
-                e.printStackTrace();
-                Log.v(TAG, "Email Not Delivered");
             } catch(Exception e) {
                 e.printStackTrace();
-                Log.v(TAG, "Email Not Delivered");
             }
             return null;
         }

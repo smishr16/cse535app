@@ -88,7 +88,7 @@ public class MyLocations extends AppCompatActivity {
     private void displayLocations() {
         getLocations();
         ListView listView = (ListView) findViewById(R.id.listView_my_locations);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.my_location_item, R.id.location_name, locationNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.my_location_item, R.id.location_name, locationNames);
         listView.setAdapter(adapter);
     }
 

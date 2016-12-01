@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Sooraj on 10/20/2016.
@@ -153,7 +154,7 @@ public class DBManager {
                 String taskDate = c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE));
                 try{
                     if(!TextUtils.isEmpty(taskDate) && !taskDate.equals("null")){
-                        storedDate = new SimpleDateFormat(actualFormat).parse(taskDate);
+                        storedDate = new SimpleDateFormat(actualFormat, Locale.US).parse(taskDate);
                         task.setTaskDate(storedDate);
                     }
                 } catch(ParseException e) {
@@ -165,23 +166,6 @@ public class DBManager {
         c.close();
 
         return task_list;
-    }
-
-    public static String getTaskname(){
-        String query = "select *" + " " + "from" + " "+ Constants.TABLE_TASK + " "+ "where" +
-                " "+Task.COLUMN_TASK_ID + " " + " = (select max("+ Task.COLUMN_TASK_ID +") from" +" " +Constants.TABLE_TASK + ")";
-        Cursor c;
-
-        db.beginTransaction();
-
-        c = db.rawQuery(query, null);
-        c.moveToFirst();
-
-        String temp = c.getString(c.getColumnIndex("Description"));
-        db.endTransaction();
-        c.close();
-
-        return temp;
     }
 
     public static Task getTaskByTaskId(int task_id) {
@@ -201,13 +185,13 @@ public class DBManager {
                 t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
                 String createdDate = c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE));
                 if(!TextUtils.isEmpty(createdDate) && !createdDate.equals("null")){
-                    storedDate = new SimpleDateFormat(actualFormat).parse(createdDate);
+                    storedDate = new SimpleDateFormat(actualFormat, Locale.US).parse(createdDate);
                     t.setCreatedDate(storedDate);
                 }
                 t.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
                 String taskDate = c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE));
                 if(!TextUtils.isEmpty(taskDate) && !taskDate.equals("null")){
-                    storedDate = new SimpleDateFormat(actualFormat).parse(taskDate);
+                    storedDate = new SimpleDateFormat(actualFormat,  Locale.US).parse(taskDate);
                     t.setTaskDate(storedDate);
                 }
             }
@@ -333,23 +317,6 @@ public class DBManager {
             e.printStackTrace();
             Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
         }
-    }
-
-    public static int getTaskCount(){
-        String SEARCH_TABLE_QUERY = "SELECT COUNT(*) AS cnt FROM " + Constants.TABLE_TASK;
-        int count = 0;
-        try {
-            Cursor c = db.rawQuery(SEARCH_TABLE_QUERY, null);
-            if (c.moveToFirst()) {
-                count = c.getInt(c.getColumnIndex("cnt"));
-            }
-            c.close();
-        } catch (SQLiteException e) {
-            e.printStackTrace();
-            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-        return count;
     }
 
     public static int getLastInserted() {
@@ -526,23 +493,20 @@ public class DBManager {
                     t.setMot(c.getString(c.getColumnIndex(Task.COLUMN_MOT)));
                     String createdDate = c.getString(c.getColumnIndex(Task.COLUMN_CREATED_DATE));
                     if (!TextUtils.isEmpty(createdDate) && !createdDate.equals("null")) {
-                        storedDate = new SimpleDateFormat(actualFormat).parse(createdDate);
+                        storedDate = new SimpleDateFormat(actualFormat, Locale.US).parse(createdDate);
                         t.setCreatedDate(storedDate);
                     }
                     t.setStatus(c.getString(c.getColumnIndex(Task.COLUMN_TASK_STATUS)));
                     String taskDate = c.getString(c.getColumnIndex(Task.COLUMN_TASK_DATE));
                     if (!TextUtils.isEmpty(taskDate) && !taskDate.equals("null")) {
-                        storedDate = new SimpleDateFormat(actualFormat).parse(taskDate);
+                        storedDate = new SimpleDateFormat(actualFormat, Locale.US).parse(taskDate);
                         t.setTaskDate(storedDate);
                     }
                     tasks.add(t);
                 } while (c.moveToNext());
                 c.close();
             }
-        }catch(SQLException e) {
-            e.printStackTrace();
-            Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
-        } catch (ParseException e) {
+        }catch(SQLException | ParseException e) {
             e.printStackTrace();
             Toast.makeText(dbContext, e.getMessage(), Toast.LENGTH_LONG).show();
         }

@@ -13,8 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -35,7 +33,6 @@ import asu.edu.cse535.locationawarereminder.R;
  */
 public class Nearby extends AppCompatActivity {
 
-    private GoogleApiClient mGoogleApiClient;
     private static ArrayList<String> placesList = new ArrayList<>();
     private static ArrayList<String> placeIconList = new ArrayList<>();
     static double currLatitude;
@@ -59,7 +56,7 @@ public class Nearby extends AppCompatActivity {
         // Get Nearby Place list and calls displayList()
         placesList.clear();
         placeIconList.clear();
-        new ConnectToService().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+        new ConnectToService().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (String) null);
 
         // Handle onclick of place
         ListView listView = (ListView) findViewById(R.id.listView_nearby_places);
@@ -72,7 +69,6 @@ public class Nearby extends AppCompatActivity {
                 String latlng = locationMap.get(selected);
                 float lat = Float.parseFloat(latlng.split(",")[0]);
                 float lng = Float.parseFloat(latlng.split(",")[1]);
-                //String uri = String.format(Locale.ENGLISH,"geo:%d,%d?z=%d&q=%f,%f (%s)", 0, 0, 10, lat, lng, Uri.encode(selected));
                 String uri = String.format(Locale.ENGLISH,"geo:%f,%f?z=%d", lat, lng, 18);
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 startActivity(intent);
@@ -104,7 +100,7 @@ public class Nearby extends AppCompatActivity {
                 urlString += "location=" + currLatitude + "," + currLongitude;
                 urlString += "&radius=1000";
                 urlString += "&key=AIzaSyC54ZbYtQCj5KYdYo7hdawgFDCQXZyoErI";
-                if(nextToken != "")
+                if(!nextToken.isEmpty())
                     urlString += "&pagetoken=" + nextToken;
                 nextToken = "";
                 URL url = new URL(urlString);
@@ -116,7 +112,7 @@ public class Nearby extends AppCompatActivity {
                 myparser.setInput(in, null);
                 int event = myparser.getEventType();
                 boolean isLocationTag = false;
-                String placeName = ""; String lat = ""; String lng = "";
+                String placeName = ""; String lat = ""; String lng;
                 while (event != XmlPullParser.END_DOCUMENT) {
                     String name = myparser.getName();
                     switch (event) {

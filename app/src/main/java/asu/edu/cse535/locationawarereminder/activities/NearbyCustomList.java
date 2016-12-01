@@ -40,7 +40,7 @@ public class NearbyCustomList extends ArrayAdapter<String>{
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
-        View rowView = inflater.inflate(R.layout.nearby_place_item, null, true);
+        View rowView = inflater.inflate(R.layout.nearby_place_item, parent, false);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.item_name);
         txtTitle.setText(placeName.get(position));
 

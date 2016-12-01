@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         task_list.clear();
         task_desc_list.clear();
 
-        task_list = dbManager.get_all_tasks();
+        task_list = DBManager.get_all_tasks();
 
         for(Task task : task_list){
             String taskDesc = task.getDesc();
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
             LayoutInflater inflater = context.getLayoutInflater();
-            View rowView = inflater.inflate(layoutResourceId, null, true);
+            View rowView = inflater.inflate(layoutResourceId, parent, false);
             TextView taskDesc = (TextView) rowView.findViewById(R.id.rowTextView);
             taskDesc.setText(task_desc_list.get(position));
             if(task_list.get(position).getStatus().equals("Notified")) {
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    dbManager.updateTaskStatus(task_id, "Completed");
+                    DBManager.updateTaskStatus(task_id, "Completed");
                     load_tasks_from_db();
                 }
             });
@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    dbManager.updateTaskStatus(task_id, "Removed");
+                    DBManager.updateTaskStatus(task_id, "Removed");
                     load_tasks_from_db();
                 }
             });

@@ -31,17 +31,6 @@ public class Task {
 
     }
 
-    public Task(String desc, Date taskDate, String mot, double lat, double lng, String locDesc, String status, Date createdDate){
-        this.desc = desc;
-        this.taskDate = taskDate;
-        this.mot = mot;
-        this.lat = lat;
-        this.lng = lng;
-        this.locDesc = locDesc;
-        this.status = status;
-        this.createdDate = createdDate;
-    }
-
     public int getTaskId() {
         return taskId;
     }

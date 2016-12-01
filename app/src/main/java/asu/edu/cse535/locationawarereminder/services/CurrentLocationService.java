@@ -21,7 +21,6 @@ import android.support.v4.content.ContextCompat;
 public class CurrentLocationService extends Service {
 
     private final IBinder curLocBinder = new LocalBinder();
-    private static boolean DEBUG = false;
     private Handler curLocHandler = null;
 
     @Nullable

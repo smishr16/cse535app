@@ -17,12 +17,6 @@ public class FavouriteLocations {
 
     public FavouriteLocations() {}
 
-    public FavouriteLocations(String description, double latitude, double longitude) {
-        this.description = description;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
     public int getLocId() {
         return locId;
     }

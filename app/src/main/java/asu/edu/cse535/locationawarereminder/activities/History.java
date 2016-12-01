@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -49,7 +48,6 @@ public class History extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView historyDesc = (TextView) view.findViewById(R.id.history_name);
                 Intent intent = new Intent(History.this, NewTaskActivity.class);
                 intent.putExtra("Task Description", taskList.get(position).getDesc());
                 intent.putExtra("Lat", taskList.get(position).getLat());
@@ -69,8 +67,8 @@ public class History extends AppCompatActivity {
         addressList = DBManager.getCompletedTaskAddress();
         if (taskNameList.size()>0 && addressList.size()>0 && taskNameList.size()==addressList.size()){
             for (int i=0; i<taskNameList.size(); i++){
-                String temp = "";
-                String address = "";
+                String temp;
+                String address;
                 temp = taskNameList.get(i) + System.getProperty("line.separator");
                 address = addressList.get(i);
                 temp = temp + address;

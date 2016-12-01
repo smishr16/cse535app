@@ -31,7 +31,7 @@ public class Settings extends AppCompatActivity {
         // Populate current values
         populateValues();
 
-        final EditText editText_email = (EditText) findViewById(R.id.editText_email);;
+        final EditText editText_email = (EditText) findViewById(R.id.editText_email);
         final EditText editText_phone = (EditText) findViewById(R.id.editText_phone);
         final ArrayList<Properties> propertyList = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class Settings extends AppCompatActivity {
 
     private void populateValues() {
 
-        final EditText editText_email = (EditText) findViewById(R.id.editText_email);;
+        final EditText editText_email = (EditText) findViewById(R.id.editText_email);
         final EditText editText_phone = (EditText) findViewById(R.id.editText_phone);
 
         String[] propertyArray = {Constants.propertyEmail, Constants.propertyPhone};
