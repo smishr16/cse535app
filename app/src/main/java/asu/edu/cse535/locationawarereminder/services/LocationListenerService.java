@@ -11,15 +11,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
 import android.util.Log;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,8 +57,8 @@ import asu.edu.cse535.locationawarereminder.database.Task;
  * Created by Sooraj on 10/31/2016.
  */
 public class LocationListenerService extends Service {
-
     final String TAG = "LAR";
+    private int taskId;
 
     @Nullable
     @Override
@@ -58,49 +70,159 @@ public class LocationListenerService extends Service {
     @Override
     public void onCreate() {
         System.out.println("Inside create method");
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         System.out.println("Inside onstartcommand method");
         int taskId = intent.getExtras().getInt("task_id");
+        this.taskId = taskId;
         String desc = intent.getExtras().getString("task_desc");
         double lat = intent.getExtras().getDouble("lat");
         double lng = intent.getExtras().getDouble("lng");
 
-        createProximityAlert(taskId, desc, lat, lng);
-
+        new TravelTime().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
         return START_REDELIVER_INTENT;
     }
 
-    private void createProximityAlert(int task_id, String desc, final double lat, final double lng) {
+    private class TravelTime extends AsyncTask<String, Long, Void> {
+
+        private long travelTime = 0;
+
+        @Override
+        protected void onPreExecute(){
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                Task task = DBManager.getTaskByTaskId(taskId);
+                Date taskDate = task.getTaskDate();
+                long delay = 0;
+                if (taskDate != null) {
+                    if (ContextCompat.checkSelfPermission(LocationListenerService.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        for (int i = 0; i < 5; i++)
+                            System.out.println("*********NO PERMISSION**********");
+                        return null;
+                    }
+
+                    String mot = task.getMot();
+                    String mode = "d";
+                    if (mot.equalsIgnoreCase("Cycling"))
+                        mode = "b";
+                    else if (mot.equalsIgnoreCase("Walking"))
+                        mode = "w";
+
+                    final LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    Location lastKnownLocation = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    String urlString = "https://maps.googleapis.com/maps/api/directions/xml?";
+                    urlString += "origin=" + lastKnownLocation.getLatitude() + "," + lastKnownLocation.getLongitude();
+                    urlString += "&destination=" + task.getLat() + "," + task.getLng();
+                    urlString += "&mode=" + mode;
+                    urlString += "&key=AIzaSyC54ZbYtQCj5KYdYo7hdawgFDCQXZyoErI";
+                    try {
+                        URL url = new URL(urlString);
+                        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                        XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
+                        XmlPullParser myparser = xmlFactoryObject.newPullParser();
+                        myparser.setInput(in, null);
+                        int event = myparser.getEventType();
+                        boolean stepOpen = false;
+                        boolean durationOpen = false;
+                        while (event != XmlPullParser.END_DOCUMENT) {
+                            String name = myparser.getName();
+                            switch (event) {
+                                case XmlPullParser.START_TAG:
+                                    if(name.equalsIgnoreCase("step"))
+                                        stepOpen = true;
+                                    if(name.equalsIgnoreCase("duration") && !stepOpen)
+                                        durationOpen = true;
+                                    if(name.equalsIgnoreCase("value") && durationOpen)
+                                        this.travelTime = Long.parseLong(myparser.nextText()) * 1000;
+                                    break;
+                                case XmlPullParser.END_TAG:
+                                    if(name.equalsIgnoreCase("step"))
+                                        stepOpen = false;
+                                    if(name.equalsIgnoreCase("duration"))
+                                        durationOpen = false;
+                                    break;
+                            }
+                            event = myparser.next();
+                        }
+                        br.close();
+                        in.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Long... value){}
+
+        @Override
+        protected void onPostExecute(final Void unused){
+            createProximityAlert(travelTime);
+        }
+    }
+
+    private void createProximityAlert(final long travelTime) {
+        final Task task = DBManager.getTaskByTaskId(taskId);
+
         final LocationManager locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         Intent intent = new Intent("lar.proximityalert");           //Custom Action
-        intent.putExtra("taskId", task_id);
-        intent.putExtra("taskDesc", desc);
-        final PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, task_id, intent, 0);
+        intent.putExtra("taskId", taskId);
+        intent.putExtra("taskDesc", task.getDesc());
+        final PendingIntent pi = PendingIntent.getBroadcast(LocationListenerService.this, taskId, intent, 0);
 
         final float radius = 100;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        Task task = DBManager.getTaskByTaskId(task_id);
         Date taskDate = task.getTaskDate();
         long delay = 0;
         if (taskDate != null) {
             Calendar c = Calendar.getInstance();
             Date currDate = c.getTime();
-            delay = taskDate.getTime() - currDate.getTime();
+            delay = taskDate.getTime() - currDate.getTime() - travelTime;
         }
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                if(travelTime != 0) {
+                    if (!task.getStatus().equals("Completed") && !task.getStatus().equals("Removed")) {
+                        int formattedTravelTime = (int) travelTime / (1000 * 60);
+
+                        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                        Intent openTaskIntent = new Intent(LocationListenerService.this, NewTaskActivity.class);
+                        openTaskIntent.putExtra("task_id", task.getTaskId());
+                        openTaskIntent.putExtra("Mode", R.string.open_from_notif);
+                        openTaskIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent notificationIntent = PendingIntent.getActivity(getApplicationContext(), task.getTaskId(), openTaskIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        Notification.Builder builder = new Notification.Builder(LocationListenerService.this);
+
+                        builder.setAutoCancel(true);
+                        builder.setContentTitle("LAR");
+                        builder.setContentText("You need approximately " + formattedTravelTime + " minutes to reach your destination for this task");
+                        builder.setSmallIcon(R.drawable.common_ic_googleplayservices);
+                        builder.setContentIntent(notificationIntent);
+                        builder.setOngoing(false);
+                        builder.setSubText("Description : " + task.getDesc());   //API level 16
+                        notificationManager.notify(task.getTaskId()*100, builder.build());
+                    }
+                }
                 if (ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(LocationListenerService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-                locMgr.addProximityAlert(lat, lng, radius, -1, pi);
+                locMgr.addProximityAlert(task.getLat(), task.getLng(), radius, -1, pi);
                 IntentFilter filter = new IntentFilter("lar.proximityalert");
                 registerReceiver(new ProximityIntentReceiver(), filter);
             }
@@ -188,7 +310,6 @@ public class LocationListenerService extends Service {
         return email;
     }
 
-
     private void sendSMS(String phoneNumber, String message) {
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
@@ -209,27 +330,27 @@ public class LocationListenerService extends Service {
                     case Activity.RESULT_OK:
                         Log.v(TAG, "SMS sent");
                         //Toast.makeText(getBaseContext(), "SMS Sent",
-                                //Toast.LENGTH_SHORT).show();
+                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                         Log.v(TAG, "Generic failure");
                         //Toast.makeText(getBaseContext(), "Generic Failure",
-                                //Toast.LENGTH_SHORT).show();
+                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_NO_SERVICE:
                         Log.v(TAG, "No Service");
                         //Toast.makeText(getBaseContext(), "No Service",
-                                //Toast.LENGTH_SHORT).show();
+                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_NULL_PDU:
                         Log.v(TAG, "Null PDU");
                         //Toast.makeText(getBaseContext(), "Null PDU",
-                                //Toast.LENGTH_SHORT).show();
+                        //Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_RADIO_OFF:
                         Log.v(TAG, "Radio Off");
                         //Toast.makeText(getBaseContext(), "Radio Off",
-                                //Toast.LENGTH_SHORT).show();
+                        //Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -243,12 +364,12 @@ public class LocationListenerService extends Service {
                     case Activity.RESULT_OK:
                         Log.v(TAG, "SMS Delivered");
                         //Toast.makeText(getBaseContext(), "SMS delivered",
-                                //Toast.LENGTH_SHORT).show();
+                        //Toast.LENGTH_SHORT).show();
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.v(TAG, "SMS Not Delivered");
                         //Toast.makeText(getBaseContext(), "SMS Not Delivered",
-                                //Toast.LENGTH_SHORT).show();
+                        //Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -265,6 +386,7 @@ public class LocationListenerService extends Service {
         RetreiveFeedTask task = new RetreiveFeedTask();
         task.execute(subject, recipient, textMessage);
     }
+
     class RetreiveFeedTask extends AsyncTask<String, Void, Void> {
 
         @Override
