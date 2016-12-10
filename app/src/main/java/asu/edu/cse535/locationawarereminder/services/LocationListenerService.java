@@ -298,6 +298,8 @@ public class LocationListenerService extends Service {
         return email;
     }
 
+    // Used AndroidDhina as a tutorial to incorporate:
+    // https://androiddhina.blogspot.com/2015/12/how-to-send-sms-in-android-without-user-interaction.html
     private void sendSMS(String phoneNumber, String message) {
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
@@ -353,6 +355,8 @@ public class LocationListenerService extends Service {
         task.execute(subject, recipient, textMessage);
     }
 
+    // Used CodeJava as an example to incorporate
+    // http://www.codejava.net/java-ee/javamail/send-e-mail-in-html-format-using-javamail-api
     class RetreiveFeedTask extends AsyncTask<String, Void, Void> {
 
         @Override
